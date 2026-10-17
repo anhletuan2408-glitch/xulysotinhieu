@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đề tài 13: Phân tích Biểu đồ Pole-Zero & Đáp ứng Tần số Hệ LTI | HCMUT</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX Core + Auto-Render Extension -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Separated Stylesheet (Dual Theme: Dark Xanh Tối Gốc & Light Sáng Bách Khoa) -->
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ==================== HCMUT TOP NAVY BAR + 2-THEME SWITCHER ==================== -->
+  <header class="sticky top-0 z-30 shadow-lg">
+    <div class="bk-top-bar px-4 py-2.5">
+      <div class="max-w-[1680px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <!-- HCMUT Brand Identity -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-white/10 border border-sky-300/40 flex flex-col items-center justify-center text-white shadow-inner">
+            <span class="text-[10px] font-extrabold tracking-widest text-sky-300 leading-none">BK</span>
+            <span class="text-[9px] font-bold tracking-tight text-white leading-tight mt-0.5">TP.HCM</span>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-sky-200">
+              ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH
+            </div>
+            <div class="text-sm md:text-base font-extrabold text-white tracking-wide">
+              TRƯỜNG ĐẠI HỌC BÁCH KHOA • ĐỀ TÀI 13: HỆ THỐNG LTI &amp; POLE-ZERO
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Switcher (Dark Xanh Tối Gốc vs Light Sáng Bách Khoa) & Export Actions -->
+        <div class="flex flex-wrap items-center gap-2.5 text-xs">
+          <!-- 2-Mode Theme Switcher -->
+          <div class="flex items-center bg-slate-950/60 p-1 rounded-lg border border-white/20">
+            <button
+              id="themeDarkBtn"
+              onclick="setAppTheme('dark')"
+              class="px-3 py-1 rounded-md bg-sky-500 text-white font-bold text-xs shadow transition"
+            >
+              🌙 Xanh Tối Gốc
+            </button>
+            <button
+              id="themeLightBtn"
+              onclick="setAppTheme('light')"
+              class="px-3 py-1 rounded-md text-sky-100 hover:text-white font-medium text-xs transition"
+            >
+              ☀️ Sáng Bách Khoa
+            </button>
+          </div>
+
+          <button
+            id="copyLatexBtn"
+            onclick="copyLatexReport()"
+            class="bg-white/10 hover:bg-white/20 text-white border border-white/25 px-3 py-1.5 rounded-lg font-semibold transition"
+          >
+            📋 Copy LaTeX
+          </button>
+          <button
+            onclick="window.print()"
+            class="bg-[#0095da] hover:bg-[#0072bc] text-white px-3 py-1.5 rounded-lg font-semibold shadow transition"
+          >
+            🖨️ Xuất PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Navigation Bar -->
+    <div class="bk-subnav px-4">
+      <div class="max-w-[1680px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center">
+          <button
+            id="tabBtnSimulator"
+            onclick="switchTab('simulator')"
+            class="px-4 py-2.5 text-xs md:text-sm font-bold text-sky-400 border-b-2 border-sky-400 transition"
+          >
+            🎛️ Mô phỏng &amp; Giải tích Hệ LTI
+          </button>
+          <button
+            id="tabBtnGuide"
+            onclick="switchTab('guide')"
+            class="px-4 py-2.5 text-xs md:text-sm font-semibold theme-muted hover:opacity-90 transition"
+          >
+            📘 Hướng dẫn Học tập &amp; Thực hành
+          </button>
+          <button
+            id="tabBtnReport"
+            onclick="switchTab('report')"
+            class="px-4 py-2.5 text-xs md:text-sm font-semibold theme-muted hover:opacity-90 transition"
+          >
+            📐 Báo cáo Thiết kế &amp; Giải thuật
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 py-1.5">
+          <span class="text-xs font-bold theme-heading uppercase hidden sm:inline">Bộ lọc mẫu:</span>
+          <select
+            id="presetSelect"
+            onchange="applyPreset(this.value)"
+            class="sci-input text-xs font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500"
+          >
+            <option value="resonator" selected>Cộng hưởng thông dải (Band-pass Resonator)</option>
+            <option value="notch">Chắn dải / Khử nhiễu 50Hz (Notch Filter)</option>
+            <option value="lowpass_iir">Thông thấp IIR bậc 2 (Butterworth Low-pass)</option>
+            <option value="highpass_iir">Thông cao IIR bậc 2 (High-pass)</option>
+            <option value="moving_avg">Trung bình trượt FIR bậc 4 (Moving Average)</option>
+            <option value="allpass">Hệ thống All-Pass (Cân bằng pha)</option>
+            <option value="comb">Bộ lọc Răng lược (Comb Filter)</option>
+            <option value="unstable">Hệ Không ổn định (Cực ngoài đường tròn đơn vị)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== TAB 1: INTERACTIVE SIMULATOR ==================== -->
+  <main id="tabSimulator" class="flex-1 max-w-[1680px] w-full mx-auto p-4 md:p-6 space-y-6">
+
+    <!-- 1. HERO BANNER: DIRECT FUNCTION INPUT -->
+    <section class="bk-hero-banner rounded-2xl p-5 md:p-6 text-white shadow-lg space-y-4">
+      <div class="relative z-10 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded bg-sky-400/20 text-sky-200 border border-sky-300/30">
+            Nhập Hàm Truyền &amp; Xuất Biểu Đồ Tự Động
+          </span>
+          <h2 class="text-lg md:text-xl font-extrabold text-white mt-1">
+            Nhập Biểu thức Hàm truyền $H(z)$ Cần Tính &amp; Biểu diễn
+          </h2>
+          <p class="text-xs text-sky-100/90 mt-0.5">
+            Mỗi lần nhấn <strong>"Tính Lại &amp; Xuất Biểu Đồ"</strong>, biểu đồ Mặt phẳng phức $Z$ sẽ tự động đặt lại về đúng nghiệm vừa tính và căn chỉnh khung nhìn chuẩn xác.
+          </p>
+        </div>
+      </div>
+
+      <!-- Expression Input Bar -->
+      <div class="relative z-10 flex flex-col md:flex-row gap-3">
+        <div class="flex-1 flex items-center bg-slate-950/85 rounded-xl px-4 py-2.5 shadow-inner border border-sky-400/40 focus-within:border-sky-300">
+          <span class="text-sky-400 font-extrabold mono text-sm md:text-base mr-3 select-none">H(z) =</span>
+          <input
+            type="text"
+            id="hzFormulaInput"
+            value="0.19 * (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2)"
+            onkeydown="if(event.key === 'Enter') evaluateSymbolicHzInput()"
+            placeholder="Ví dụ: (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2) hoặc (z^2 - 1)/(z^2 - 1.2*z + 0.8)"
+            class="w-full bg-transparent text-white font-semibold mono text-sm md:text-base focus:outline-none"
+          />
+        </div>
+        <button
+          onclick="evaluateSymbolicHzInput()"
+          class="bg-[#e11d48] hover:bg-[#be123c] text-white font-extrabold px-6 py-3 rounded-xl text-sm shadow-lg transition whitespace-nowrap flex items-center justify-center gap-2"
+        >
+          <span>⚡ Tính Lại &amp; Xuất Biểu Đồ</span>
+        </button>
+      </div>
+
+      <!-- Quick Sample Function Chips + Feedback -->
+      <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="text-sky-200 font-semibold">Hàm mẫu thử nhanh:</span>
+          <button
+            onclick="evaluateSymbolicHzInput('1 / (1 - 0.85*z^-1)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            1 / (1 - 0.85*z^-1)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(1 + z^-1) / (1 - 1.4*z^-1 + 0.85*z^-2)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (1 + z^-1) / (1 - 1.4*z^-1 + 0.85*z^-2)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(z^2 - 1) / (z^2 - 1.2*z + 0.75)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (z^2 - 1) / (z^2 - 1.2*z + 0.75)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(1 - 0.8*z^-1)*(1 + 0.8*z^-1) / (1 + 0.7*z^-2)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (1 - 0.8*z^-1)*(1 + 0.8*z^-1) / (1 + 0.7*z^-2)
+          </button>
+        </div>
+        <span id="exprFeedbackBadge" class="text-xs font-semibold text-emerald-300 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-500/40">
+          ✓ Đã sẵn sàng tính toán và biểu diễn
+        </span>
+      </div>
+    </section>
+
+    <!-- 2. SPACIOUS ANALYTICAL OUTPUT PANEL (ALL DISPLAY-MODE LATEX) -->
+    <section class="sci-card p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/40 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-6 rounded-full bg-sky-500 inline-block"></span>
+          <div>
+            <h3 class="text-base font-extrabold theme-heading uppercase tracking-wide">
+              Kết quả Giải tích &amp; Biểu diễn Toán học Hệ thống LTI
+            </h3>
+            <p class="text-xs theme-muted">
+              Chuẩn hóa tự động dưới dạng phân thức LaTeX Display-Mode sắc nét
+            </p>
+          </div>
+        </div>
+        <span id="stabilityBadge" class="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+          ● Hệ thống Ổn định BIBO
+        </span>
+      </div>
+
+      <!-- Row 1: Rational H(z) and Factored Pole-Zero H(z) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            <span>1. Hàm truyền dạng Đa thức Tỷ lệ chuẩn hóa theo $z^{-1}$:</span>
+            <span class="text-sky-400 font-bold">Biến đổi Z</span>
+          </div>
+          <div id="latexHzRational" class="math-display-xl py-3 flex items-center justify-center min-h-[84px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            <span>2. Hàm truyền Phân tích theo Nghiệm Cực ($p_k$) &amp; Zero ($z_i$):</span>
+            <span id="latexRocStatement" class="text-rose-400 font-bold"></span>
+          </div>
+          <div id="latexHzFactored" class="math-display-lg py-3 flex items-center justify-center min-h-[84px]"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Closed-form Impulse Response h[n], Frequency Response H(e^{jw}), and Difference Equation y[n] -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            3. Đáp ứng Xung Giải tích $h[n] = \mathcal{Z}^{-1}\{H(z)\}$:
+          </div>
+          <div id="latexAnalyticalHn" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            4. Biểu thức Đáp ứng Tần số $H\left(e^{j\omega}\right)$:
+          </div>
+          <div id="latexHejw" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            5. Phương trình Sai phân Tuyến tính Hệ số Hằng:
+          </div>
+          <div id="latexDiffEq" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. INTERACTIVE Z-PLANE & REAL-TIME 60 FPS CHARTS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN (5 cols): Z-PLANE + ROOT LISTS -->
+      <section class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- Z-PLANE CARD -->
+        <div id="zPlaneCard" class="sci-card p-5 flex flex-col gap-4 transition">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2.5">
+                <h2 class="text-base font-extrabold theme-heading uppercase">Biểu đồ Mặt phẳng Phức $Z$ ($\text{Im}-\text{Re}$)</h2>
+                <span id="fpsCounter" class="text-xs mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">60 FPS</span>
+              </div>
+              <p class="text-xs theme-muted mt-0.5">
+                Kéo thả <span class="text-rose-400 font-bold">Cực ($\times$)</span> hoặc <span class="text-sky-400 font-bold">Zero ($\circ$)</span> • Chuột phải để xóa • Nhấp đúp để thêm
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button
+                onclick="evaluateSymbolicHzInput()"
+                title="Đặt lại Mặt phẳng phức theo đúng hàm H(z) đang nhập ở trên"
+                class="text-xs font-bold bg-[#0072bc] hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg shadow-sm transition"
+              >
+                🔄 Tính lại theo $H(z)$
+              </button>
+              <button
+                onclick="syncFormulaBoxFromDraggedZPlane()"
+                title="Cập nhật ô nhập H(z) theo vị trí Cực/Zero vừa kéo thả"
+                class="text-xs font-semibold sci-input hover:opacity-80 px-2.5 py-1.5 rounded-lg transition"
+              >
+                ↗ Lấy hàm từ đồ thị
+              </button>
+            </div>
+          </div>
+
+          <!-- Z-Plane Action Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 sci-subcard p-3 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="theme-muted font-semibold mr-1">Chế độ chuột:</span>
+              <button id="modeDragBtn" onclick="setInteractMode('drag')" class="px-3 py-1 rounded-md bg-[#0072bc] text-white font-semibold shadow-sm transition">Kéo thả</button>
+              <button id="modeAddPoleBtn" onclick="setInteractMode('addPole')" class="px-3 py-1 rounded-md sci-input text-rose-500 hover:opacity-80 font-medium transition">+ Cực ($\times$)</button>
+              <button id="modeAddZeroBtn" onclick="setInteractMode('addZero')" class="px-3 py-1 rounded-md sci-input text-sky-400 hover:opacity-80 font-medium transition">+ Zero ($\circ$)</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                <input type="checkbox" checked onchange="onConjugateToggle(this.checked)" class="accent-sky-500 rounded" />
+                <span>Đối xứng liên hợp</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                <input type="checkbox" checked onchange="onShowVectorsToggle(this.checked)" class="accent-sky-500 rounded" />
+                <span>Vector hình học</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Legend Bar (Highlighting Signature Red ROC Boundary) -->
+          <div class="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-[#070b14] border border-slate-800 text-xs text-slate-200">
+            <div class="flex flex-wrap items-center gap-3.5">
+              <span class="flex items-center gap-1.5">
+                <strong class="text-[#ff453a] text-sm leading-none">×</strong>
+                <span class="text-slate-200 font-medium">Cực ($p_k$)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <strong class="text-sky-400 text-sm leading-none">○</strong>
+                <span class="text-slate-200 font-medium">Zero ($z_i$)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                <span class="text-slate-200 font-medium">Điểm $e^{j\omega_0}$</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3.5 h-2.5 rounded-sm bg-red-500/25 border-2 border-dashed border-[#ff453a] inline-block"></span>
+                <span class="text-red-300 font-semibold">Giới hạn &amp; Miền ROC</span>
+              </span>
+            </div>
+            <div id="zCursorLatex" class="text-xs text-sky-300 font-medium dark-katex"></div>
+          </div>
+
+          <!-- Z-Plane Canvas -->
+          <div class="relative w-full aspect-square max-h-[430px] mx-auto rounded-xl border-2 border-slate-700/80 overflow-hidden shadow-lg">
+            <canvas id="zPlaneCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+          </div>
+
+          <!-- Frequency Probe Slider & ROC Controls -->
+          <div class="sci-subcard p-3.5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-amber-400 font-bold">● Tần số khảo sát:</span>
+                <span id="omegaValueLatex" class="font-bold"></span>
+              </div>
+              <div id="vectorGainLatex" class="text-sky-400 font-semibold"></div>
+            </div>
+
+            <input
+              type="range"
+              id="omegaSlider"
+              min="-3.14159"
+              max="3.14159"
+              step="0.01"
+              value="0.7854"
+              oninput="onOmegaSliderChange(this.value)"
+              class="w-full cursor-pointer"
+            />
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-700/30 text-xs">
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Chế độ Miền hội tụ (ROC):</label>
+                <select
+                  id="rocTypeSelect"
+                  onchange="onRocTypeChange(this.value)"
+                  class="w-full sci-input rounded-lg px-2.5 py-2 text-xs font-medium focus:border-sky-500 focus:outline-none"
+                >
+                  <option value="causal" selected>Nhân quả (|z| &gt; r_max)</option>
+                  <option value="anticausal">Phản nhân quả (|z| &lt; r_min)</option>
+                  <option value="stable">Chứa |z| = 1 (Hệ ổn định)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Hệ số khuếch đại $K$:</label>
+                <input
+                  type="number"
+                  id="gainInput"
+                  value="1"
+                  step="0.05"
+                  oninput="onGainChange(this.value)"
+                  class="w-full sci-input rounded-lg px-2.5 py-2 text-xs mono font-semibold focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+              <div class="flex items-end gap-2">
+                <button
+                  onclick="normalizePeakGain()"
+                  class="flex-1 bg-[#0072bc] hover:bg-sky-500 text-white rounded-lg px-2.5 py-2 text-xs font-semibold shadow-sm transition"
+                >
+                  Chuẩn hóa $0\text{ dB}$
+                </button>
+                <button
+                  onclick="clearAllPolesZeros()"
+                  class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 rounded-lg px-2.5 py-2 text-xs font-semibold transition"
+                >
+                  Xóa hết
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SPACIOUS POLE-ZERO TABLES & ARRAY COEFFICIENTS -->
+        <div class="sci-card p-5 flex flex-col gap-4">
+          <h3 class="text-base font-extrabold theme-heading uppercase">Bảng Tọa độ Nghiệm Cực ($p_k$) &amp; Zero ($z_i$)</h3>
+
+          <div class="space-y-4">
+            <!-- Zeros Table -->
+            <div class="sci-subcard p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-wide">Danh sách Zero ($B(z) = 0$)</span>
+                <button onclick="addManualRoot('zero')" class="text-xs sci-input hover:opacity-80 px-3 py-1 rounded-md font-semibold transition">+ Thêm Zero</button>
+              </div>
+              <div id="zerosListContainer" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Poles Table -->
+            <div class="sci-subcard p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-rose-400 uppercase tracking-wide">Danh sách Cực ($A(z) = 0$)</span>
+                <button onclick="addManualRoot('pole')" class="text-xs sci-input hover:opacity-80 px-3 py-1 rounded-md font-semibold transition">+ Thêm Cực</button>
+              </div>
+              <div id="polesListContainer" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+
+          <!-- Optional Array Coefficients Input -->
+          <details class="sci-subcard p-3.5 text-xs">
+            <summary class="cursor-pointer font-bold theme-heading hover:text-sky-400 select-none">
+              ⚙️ Nhập theo mảng hệ số $[b_0, b_1, \dots]$ và $[a_0, a_1, \dots]$
+            </summary>
+            <div class="space-y-3 pt-3 mt-2 border-t border-slate-700/30">
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Mảng hệ số Tử số $B(z)$:</label>
+                <input
+                  type="text"
+                  id="numCoeffsInput"
+                  value="0.19, 0, -0.19"
+                  class="w-full sci-input rounded-lg px-3 py-2 mono text-sky-400 font-semibold"
+                />
+              </div>
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Mảng hệ số Mẫu số $A(z)$:</label>
+                <input
+                  type="text"
+                  id="denCoeffsInput"
+                  value="1, -1.2728, 0.81"
+                  class="w-full sci-input rounded-lg px-3 py-2 mono text-rose-400 font-semibold"
+                />
+              </div>
+              <button
+                onclick="applyCoefficientsFromInput()"
+                class="w-full bg-[#0072bc] hover:bg-sky-500 text-white font-bold py-2.5 rounded-lg shadow transition"
+              >
+                ⚡ Tính Lại Nghiệm &amp; Vẽ Mặt Phẳng Phức
+              </button>
+            </div>
+          </details>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN (7 cols): SUMMARY METRICS + 3 SPACIOUS CHARTS -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- TOP METRICS SUMMARY BAR -->
+        <div class="sci-card p-4 grid grid-cols-2 sm:grid-cols-4 gap-3.5 text-xs">
+          <div class="sci-subcard p-3.5 border-l-4 border-l-red-500">
+            <div class="theme-muted font-semibold mb-1">Giới hạn Miền hội tụ (ROC)</div>
+            <div id="rocSummaryLatex" class="font-bold text-red-400 text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-sky-500">
+            <div class="theme-muted font-semibold mb-1">Bán kính cực lớn nhất</div>
+            <div id="maxPoleRadiusLatex" class="font-bold text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-cyan-400">
+            <div class="theme-muted font-semibold mb-1">Đỉnh biên độ $\max \left|H\left(e^{j\omega}\right)\right|$</div>
+            <div id="peakGainLatex" class="font-bold text-sky-400 text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-amber-500">
+            <div class="theme-muted font-semibold mb-1">Phân loại Hệ thống LTI</div>
+            <div id="filterTypeText" class="font-bold text-amber-400 text-sm"></div>
+          </div>
+        </div>
+
+        <!-- CHART 1: MAGNITUDE RESPONSE |H(e^{jw})| -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                1. Đồ thị Đáp ứng Biên độ $\left|H\left(e^{j\omega}\right)\right|$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Tích khoảng cách từ điểm $e^{j\omega}$ tới các Zero chia cho tích khoảng cách tới các Cực (Kéo chuột trên đồ thị để quét $\omega_0$)
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <label class="flex items-center gap-1.5 cursor-pointer sci-subcard px-3 py-1.5 font-medium select-none">
+                <input type="checkbox" onchange="onMagDbToggle(this.checked)" class="accent-sky-500" />
+                <span>Thang đo $\text{dB}$ ($20\log_{10}$)</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer sci-subcard px-3 py-1.5 font-medium select-none">
+                <input type="checkbox" onchange="onFullFreqToggle(this.checked)" class="accent-sky-500" />
+                <span>Miền $[-\pi, \pi]$</span>
+              </label>
+            </div>
+          </div>
+          <div class="w-full h-[230px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="magCanvas" class="w-full h-full cursor-crosshair"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 2: PHASE RESPONSE & GROUP DELAY -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                2. Đồ thị Đáp ứng Pha $\angle H\left(e^{j\omega}\right)$ &amp; Trễ nhóm $\tau_g(\omega)$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Hiệu tổng góc pha từ các Zero và các Cực • Trễ nhóm $\tau_g(\omega)$ đặc trưng cho độ trễ truyền dẫn của từng thành phần tần số
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 sci-subcard p-1 text-xs">
+              <button id="phaseModeBtn" onclick="setPhaseChartMode('phase')" class="px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition">
+                Đáp ứng Pha (Độ $^\circ$)
+              </button>
+              <button id="groupDelayModeBtn" onclick="setPhaseChartMode('groupDelay')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                Trễ nhóm $\tau_g(\omega)$
+              </button>
+            </div>
+          </div>
+          <div class="w-full h-[220px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="phaseCanvas" class="w-full h-full cursor-crosshair"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 3: IMPULSE RESPONSE h[n] & STEP RESPONSE s[n] -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                3. Đồ thị Đáp ứng Xung $h[n]$ &amp; Đáp ứng Nhảy bậc $s[n]$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Tự động vẽ trên miền $n \ge 0$ (Nhân quả), $n \le 0$ (Phản nhân quả) hoặc hai phía tùy theo Miền hội tụ (ROC)
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <div class="flex sci-subcard p-1">
+                <button id="timeImpulseBtn" onclick="setTimeChartMode('impulse')" class="px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition">
+                  Đáp ứng xung $h[n]$
+                </button>
+                <button id="timeStepBtn" onclick="setTimeChartMode('step')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                  Đáp ứng nhảy bậc $s[n]$
+                </button>
+                <button id="timeSignalBtn" onclick="setTimeChartMode('signal')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                  Lọc tín hiệu $x[n]$
+                </button>
+              </div>
+              <select
+                onchange="onNumSamplesChange(this.value)"
+                class="sci-input rounded-lg px-2.5 py-1.5 text-xs font-semibold"
+              >
+                <option value="40">N = 40 mẫu</option>
+                <option value="64" selected>N = 64 mẫu</option>
+                <option value="120">N = 120 mẫu</option>
+              </select>
+            </div>
+          </div>
+          <div class="w-full h-[230px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="impulseCanvas" class="w-full h-full"></canvas>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ==================== TAB 2: STUDY GUIDE (HƯỚNG DẪN HỌC TẬP) ==================== -->
+  <section id="tabGuide" class="hidden flex-1 max-w-[1280px] w-full mx-auto p-4 md:p-6 space-y-6">
+    <div class="sci-card p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/40 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Tài liệu Hướng dẫn Học tập Tương tác • HCMUT</span>
+          <h2 class="text-2xl font-extrabold theme-heading mt-1">Liên hệ giữa Cực/Zero, Miền hội tụ (ROC) và Đáp ứng Tần số Hệ LTI</h2>
+        </div>
+        <button onclick="switchTab('simulator')" class="bg-[#0072bc] hover:bg-sky-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+          ← Quay lại Bộ mô phỏng
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-sky-400 font-bold text-sm">1. Biểu diễn Cực – Zero của $H(z)$</div>
+          <div class="text-xs leading-relaxed">
+            Hàm truyền của hệ thống LTI rời rạc bậc $N$:
+            $$H(z) = \frac{\sum_{m=0}^{M} b_m z^{-m}}{\sum_{k=0}^{N} a_k z^{-k}} = K \frac{\prod_{i=1}^{M} \left(1 - z_i z^{-1}\right)}{\prod_{k=1}^{N} \left(1 - p_k z^{-1}\right)}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li><strong>Zero ($z_i$):</strong> Nghiệm tử số $B(z)=0$. Nếu $z_i = e^{j\omega_0}$ nằm trên đường tròn đơn vị, tần số $\omega_0$ bị triệt tiêu hoàn toàn: $|H(e^{j\omega_0})| = 0$.</li>
+            <li><strong>Pole ($p_k$):</strong> Nghiệm mẫu số $A(z)=0$. Khi cực $p_k = r e^{j\omega_0}$ tiến sát đường tròn đơn vị ($r \to 1$), biên độ tại $\omega_0$ tăng vọt tạo đỉnh cộng hưởng.</li>
+          </ul>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-emerald-400 font-bold text-sm">2. Phương pháp Đánh giá Hình học</div>
+          <div class="text-xs leading-relaxed">
+            Thay $z = e^{j\omega}$ trên đường tròn đơn vị $|z|=1$:
+            $$\left|H\left(e^{j\omega}\right)\right| = |K| \frac{\prod_{i=1}^{M} \left|e^{j\omega} - z_i\right|}{\prod_{k=1}^{N} \left|e^{j\omega} - p_k\right|}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li>Độ lớn $\left|e^{j\omega} - z_i\right|$ chính là chiều dài vector nối từ Zero $z_i$ tới điểm $e^{j\omega}$.</li>
+            <li>Độ lớn $\left|e^{j\omega} - p_k\right|$ chính là chiều dài vector nối từ Cực $p_k$ tới điểm $e^{j\omega}$.</li>
+          </ul>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-rose-400 font-bold text-sm">3. Miền hội tụ (ROC) &amp; Ổn định BIBO</div>
+          <div class="text-xs leading-relaxed">
+            Miền hội tụ của biến đổi $Z$:
+            $$\text{ROC} = \left\{ z \in \mathbb{C} : \sum_{n=-\infty}^{\infty} |h[n]| |z|^{-n} < \infty \right\}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li><strong>Hệ nhân quả:</strong> $\text{ROC}: |z| > r_{\max}$. Ổn định BIBO $\iff r_{\max} < 1$.</li>
+            <li><strong>Hệ phản nhân quả:</strong> $\text{ROC}: |z| < r_{\min}$. Ổn định BIBO $\iff r_{\min} > 1$.</li>
+            <li><strong>Tiêu chuẩn tổng quát:</strong> Hệ LTI ổn định BIBO khi và chỉ khi $\text{ROC}$ chứa đường tròn đơn vị $|z|=1$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guided Lab Cards -->
+      <div class="pt-2">
+        <h3 class="text-base font-extrabold theme-heading mb-3">🧪 Các Bài Thực hành Tương tác (Nhấn để nạp cấu hình)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-sky-400 uppercase">Bài Thực hành 1 • Bộ cộng hưởng (Resonator)</span>
+              <h4 class="font-bold theme-heading text-sm">Quan hệ giữa Bán kính Cực $r$ và Độ rộng Băng thông $\Delta\omega_{-3\text{dB}}$</h4>
+              <p class="text-xs theme-muted">
+                Với cặp cực $p_{1,2} = r e^{\pm j\pi/4}$, băng thông $-3\text{ dB}$ xấp xỉ $\Delta\omega \approx 2(1-r)$. Hãy thử kéo cực từ $r = 0.7 \to 0.96$ để quan sát đỉnh cộng hưởng nhọn dần và đáp ứng xung $h[n] \propto r^n \cos(\omega_0 n) u[n]$ tắt dần chậm hơn.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('resonator')" class="self-start bg-[#0072bc] hover:bg-sky-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 1
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-emerald-400 uppercase">Bài Thực hành 2 • Bộ lọc Chắn dải (Notch Filter)</span>
+              <h4 class="font-bold theme-heading text-sm">Triệt tiêu Tần số Nhiễu bằng Zero trên Đường tròn Đơn vị</h4>
+              <p class="text-xs theme-muted">
+                Đặt cặp Zero tại $z_{1,2} = e^{\pm j\pi/3}$ làm $|H(e^{j\pi/3})| = 0$. Đặt thêm cặp Cực tại $p_{1,2} = 0.92 e^{\pm j\pi/3}$ ngay phía sau để thu hẹp hố cắt mà vẫn giữ biên độ phẳng ở các tần số khác.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('notch')" class="self-start bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 2
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-amber-400 uppercase">Bài Thực hành 3 • Hệ thống All-Pass</span>
+              <h4 class="font-bold theme-heading text-sm">Cặp Cực – Zero Đối xứng Nghịch đảo Liên hợp ($p_k = r e^{j\theta}, \; z_k = r^{-1}e^{j\theta}$)</h4>
+              <p class="text-xs theme-muted">
+                Biên độ $|H(e^{j\omega})| = 1$ phẳng tuyệt đối trên toàn dải tần $\omega \in [-\pi, \pi]$, nhưng pha và trễ nhóm $\tau_g(\omega)$ biến thiên mạnh quanh góc $\theta$.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('allpass')" class="self-start bg-amber-600 hover:bg-amber-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 3
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-rose-400 uppercase">Bài Thực hành 4 • Ổn định &amp; Nhân quả</span>
+              <h4 class="font-bold theme-heading text-sm">Cực nằm ngoài Đường tròn Đơn vị ($|p_k| = 1.07 > 1$)</h4>
+              <p class="text-xs theme-muted">
+                Khi chọn ROC Nhân quả ($|z| > 1.07$), đáp ứng xung $h[n]$ phân kỳ theo hàm mũ. Khi đổi ROC sang Phản nhân quả ($|z| < 1.07$), ROC chứa $|z|=1$ nên $h[n]$ quay sang miền $n \le 0$ và hội tụ ổn định!
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('unstable')" class="self-start bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 4
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: TECHNICAL DESIGN REPORT ==================== -->
+  <section id="tabReport" class="hidden flex-1 max-w-[1280px] w-full mx-auto p-4 md:p-6 space-y-6">
+    <div class="sci-card p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/40 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Báo cáo Thiết kế Công cụ (Đề tài 13) • HCMUT</span>
+          <h2 class="text-2xl font-extrabold theme-heading mt-1">Kiến trúc Tách Module &amp; Giải thuật Toán học DSP</h2>
+        </div>
+        <button onclick="switchTab('simulator')" class="bg-[#0072bc] hover:bg-sky-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+          ← Quay lại Bộ mô phỏng
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+        <div class="sci-subcard p-5 space-y-3">
+          <h3 class="text-base font-extrabold theme-heading">1. Bộ Phân tích Biểu thức Đại số $H(z)$ bằng DFT Phức</h3>
+          <p class="theme-muted">
+            Khi người dùng nhập trực tiếp biểu thức $H(z) = \frac{N(z)}{D(z)}$ dưới dạng tự do (như đa thức theo $z$, $z^{-1}$ hoặc tích các nhân tử), hệ thống lấy mẫu $N(e^{j 2\pi k / L})$ và $D(e^{j 2\pi k / L})$ tại $L=32$ điểm trên đường tròn đơn vị rồi thực hiện biến đổi Fourier ngược (IDFT) để trích xuất chính xác các hệ số chuỗi Laurent $b_m, a_k$.
+          </p>
+          <h3 class="text-base font-extrabold theme-heading pt-2">2. Giải thuật Tìm nghiệm Đa thức Durand-Kerner</h3>
+          <p class="theme-muted">
+            Để tìm toàn bộ nghiệm thực và phức của đa thức $P(z) = z^N + c_1 z^{N-1} + \dots + c_N = 0$, hệ thống sử dụng phép lặp đồng thời Weierstrass / Durand-Kerner:
+            $$z_k^{(m+1)} = z_k^{(m)} - \frac{P\left(z_k^{(m)}\right)}{\prod_{j \neq k} \left(z_k^{(m)} - z_j^{(m)}\right)}$$
+          </p>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <h3 class="text-base font-extrabold theme-heading">3. Khai triển Phân thức Tối giản Tìm Công thức Giải tích $h[n]$</h3>
+          <p class="theme-muted">
+            Hàm <code>buildAnalyticalHnLatex()</code> thực hiện chia đa thức kết hợp tính thặng dư (Residue) tại từng cực đơn $p_k$:
+            $$R_k = \left. \left(1 - p_k z^{-1}\right) H(z) \right|_{z = p_k}$$
+            Các cặp cực phức liên hợp $p_{1,2} = r e^{\pm j\omega_0}$ được gom tự động thành hàm dao động điều hòa tắt dần:
+            $$h_k[n] = 2|R_k| \cdot r^n \cos\left(\omega_0 n + \angle R_k\right) u[n]$$
+          </p>
+          <h3 class="text-base font-extrabold theme-heading pt-2">4. Cấu trúc Thư mục Mã nguồn Đã Tách</h3>
+          <ul class="list-disc pl-4 space-y-1 mono text-[11px] text-sky-400 font-semibold">
+            <li>index.html — Giao diện 2 chế độ (Xanh Tối Gốc &amp; Sáng Bách Khoa)</li>
+            <li>css/styles.css — Hệ biến CSS Dual-Theme &amp; KaTeX typography</li>
+            <li>js/dsp.js — Bộ parser biểu thức H(z), Durand-Kerner, PFE tìm h[n]</li>
+            <li>js/charts.js — Đồ thị Im-Re sắc nét, biên ROC đỏ đặc trưng &amp; phổ xanh sáng</li>
+            <li>js/app.js — Quản lý trạng thái, chuyển đổi theme &amp; tính lại mặt phẳng phức</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Separated JavaScript Modules -->
+  <script src="js/dsp.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

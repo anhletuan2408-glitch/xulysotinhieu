@@ -1,0 +1,3370 @@
+﻿<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Đề tài 13: Phân tích Biểu đồ Pole-Zero & Đáp ứng Tần số Hệ LTI | HCMUT</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- KaTeX Core + Auto-Render Extension -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css" />
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Separated Stylesheet (Dual Theme: Dark Xanh Tối Gốc & Light Sáng Bách Khoa) -->
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==================== THEME 1: DARK MODE (XANH TỐI GỐC - DEFAULT) ==================== */
+:root,
+html[data-theme="dark"] {
+  --bg-page: #070b14;
+  --bg-card: #0f172a;
+  --bg-subcard: #090e1a;
+  --bg-input: #060911;
+  --border-card: #1e293b;
+  --border-subcard: #1e293b;
+  --text-main: #f1f5f9;
+  --text-heading: #ffffff;
+  --text-muted: #94a3b8;
+  --katex-color: #f8fafc;
+  --nav-bg: #0b1120;
+  --nav-border: #1e293b;
+  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* ==================== THEME 2: LIGHT MODE (SÁNG BÁCH KHOA HCMUT) ==================== */
+html[data-theme="light"] {
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-subcard: #f8fafc;
+  --bg-input: #ffffff;
+  --border-card: #cbd5e1;
+  --border-subcard: #e2e8f0;
+  --text-main: #0f172a;
+  --text-heading: #0b2559;
+  --text-muted: #475569;
+  --katex-color: #0b2559;
+  --nav-bg: #ffffff;
+  --nav-border: #cbd5e1;
+  --card-shadow: 0 4px 20px -4px rgba(11, 37, 89, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+canvas {
+  touch-action: none;
+  user-select: none;
+  display: block;
+}
+
+/* Top Header & Hero Banner */
+.bk-top-bar {
+  background: linear-gradient(90deg, #091e4a 0%, #0f3378 100%);
+  color: #ffffff;
+}
+
+.bk-subnav {
+  background-color: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  transition: background-color 0.2s ease;
+}
+
+.bk-hero-banner {
+  background: linear-gradient(135deg, #091d47 0%, #0d3278 55%, #026aa7 100%);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.bk-hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* Adaptive Cards & Subcards */
+.sci-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sci-subcard {
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-subcard);
+  border-radius: 11px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sci-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+}
+
+.theme-heading {
+  color: var(--text-heading);
+}
+
+.theme-muted {
+  color: var(--text-muted);
+}
+
+/* Flash animation when Z-Plane recalculates */
+@keyframes recalcPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.65);
+    border-color: #38bdf8;
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(56, 189, 248, 0);
+    border-color: #38bdf8;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  }
+}
+
+.recalc-flash {
+  animation: recalcPulse 0.75s ease-out;
+}
+
+/* Spacious, Crystal-Clear KaTeX Typography */
+.katex {
+  font-size: 1.12em !important;
+  color: var(--katex-color) !important;
+  line-height: 1.5 !important;
+}
+
+.bk-hero-banner .katex,
+.bk-top-bar .katex,
+.dark-katex .katex {
+  color: #ffffff !important;
+}
+
+.katex-display {
+  margin: 0.55em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0.25rem;
+}
+
+.math-display-xl .katex {
+  font-size: 1.35em !important;
+}
+
+.math-display-lg .katex {
+  font-size: 1.22em !important;
+}
+
+.math-display-md .katex {
+  font-size: 1.14em !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-subcard);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+/* Range Slider Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 7px;
+  background: #334155;
+  border-radius: 999px;
+  outline: none;
+}
+
+html[data-theme="light"] input[type="range"] {
+  background: #cbd5e1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fbbf24;
+  cursor: pointer;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.65);
+}
+
+</style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+  <!-- ==================== HCMUT TOP NAVY BAR + 2-THEME SWITCHER ==================== -->
+  <header class="sticky top-0 z-30 shadow-lg">
+    <div class="bk-top-bar px-4 py-2.5">
+      <div class="max-w-[1680px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <!-- HCMUT Brand Identity -->
+        <div class="flex items-center gap-3.5">
+          <div class="w-11 h-11 rounded-xl bg-white/10 border border-sky-300/40 flex flex-col items-center justify-center text-white shadow-inner">
+            <span class="text-[10px] font-extrabold tracking-widest text-sky-300 leading-none">BK</span>
+            <span class="text-[9px] font-bold tracking-tight text-white leading-tight mt-0.5">TP.HCM</span>
+          </div>
+          <div>
+            <div class="text-[11px] font-semibold uppercase tracking-wider text-sky-200">
+              ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH
+            </div>
+            <div class="text-sm md:text-base font-extrabold text-white tracking-wide">
+              TRƯỜNG ĐẠI HỌC BÁCH KHOA • ĐỀ TÀI 13: HỆ THỐNG LTI &amp; POLE-ZERO
+            </div>
+          </div>
+        </div>
+
+        <!-- Theme Switcher (Dark Xanh Tối Gốc vs Light Sáng Bách Khoa) & Export Actions -->
+        <div class="flex flex-wrap items-center gap-2.5 text-xs">
+          <!-- 2-Mode Theme Switcher -->
+          <div class="flex items-center bg-slate-950/60 p-1 rounded-lg border border-white/20">
+            <button
+              id="themeDarkBtn"
+              onclick="setAppTheme('dark')"
+              class="px-3 py-1 rounded-md bg-sky-500 text-white font-bold text-xs shadow transition"
+            >
+              🌙 Xanh Tối Gốc
+            </button>
+            <button
+              id="themeLightBtn"
+              onclick="setAppTheme('light')"
+              class="px-3 py-1 rounded-md text-sky-100 hover:text-white font-medium text-xs transition"
+            >
+              ☀️ Sáng Bách Khoa
+            </button>
+          </div>
+
+          <button
+            id="copyLatexBtn"
+            onclick="copyLatexReport()"
+            class="bg-white/10 hover:bg-white/20 text-white border border-white/25 px-3 py-1.5 rounded-lg font-semibold transition"
+          >
+            📋 Copy LaTeX
+          </button>
+          <button
+            onclick="window.print()"
+            class="bg-[#0095da] hover:bg-[#0072bc] text-white px-3 py-1.5 rounded-lg font-semibold shadow transition"
+          >
+            🖨️ Xuất PDF
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Secondary Navigation Bar -->
+    <div class="bk-subnav px-4">
+      <div class="max-w-[1680px] mx-auto flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center">
+          <button
+            id="tabBtnSimulator"
+            onclick="switchTab('simulator')"
+            class="px-4 py-2.5 text-xs md:text-sm font-bold text-sky-400 border-b-2 border-sky-400 transition"
+          >
+            🎛️ Mô phỏng &amp; Giải tích Hệ LTI
+          </button>
+          <button
+            id="tabBtnGuide"
+            onclick="switchTab('guide')"
+            class="px-4 py-2.5 text-xs md:text-sm font-semibold theme-muted hover:opacity-90 transition"
+          >
+            📘 Hướng dẫn Học tập &amp; Thực hành
+          </button>
+          <button
+            id="tabBtnReport"
+            onclick="switchTab('report')"
+            class="px-4 py-2.5 text-xs md:text-sm font-semibold theme-muted hover:opacity-90 transition"
+          >
+            📐 Báo cáo Thiết kế &amp; Giải thuật
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2 py-1.5">
+          <span class="text-xs font-bold theme-heading uppercase hidden sm:inline">Bộ lọc mẫu:</span>
+          <select
+            id="presetSelect"
+            onchange="applyPreset(this.value)"
+            class="sci-input text-xs font-semibold rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-500"
+          >
+            <option value="resonator" selected>Cộng hưởng thông dải (Band-pass Resonator)</option>
+            <option value="notch">Chắn dải / Khử nhiễu 50Hz (Notch Filter)</option>
+            <option value="lowpass_iir">Thông thấp IIR bậc 2 (Butterworth Low-pass)</option>
+            <option value="highpass_iir">Thông cao IIR bậc 2 (High-pass)</option>
+            <option value="moving_avg">Trung bình trượt FIR bậc 4 (Moving Average)</option>
+            <option value="allpass">Hệ thống All-Pass (Cân bằng pha)</option>
+            <option value="comb">Bộ lọc Răng lược (Comb Filter)</option>
+            <option value="unstable">Hệ Không ổn định (Cực ngoài đường tròn đơn vị)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ==================== TAB 1: INTERACTIVE SIMULATOR ==================== -->
+  <main id="tabSimulator" class="flex-1 max-w-[1680px] w-full mx-auto p-4 md:p-6 space-y-6">
+
+    <!-- 1. HERO BANNER: DIRECT FUNCTION INPUT -->
+    <section class="bk-hero-banner rounded-2xl p-5 md:p-6 text-white shadow-lg space-y-4">
+      <div class="relative z-10 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <span class="text-[11px] font-bold uppercase tracking-widest px-2.5 py-0.5 rounded bg-sky-400/20 text-sky-200 border border-sky-300/30">
+            Nhập Hàm Truyền &amp; Xuất Biểu Đồ Tự Động
+          </span>
+          <h2 class="text-lg md:text-xl font-extrabold text-white mt-1">
+            Nhập Biểu thức Hàm truyền $H(z)$ Cần Tính &amp; Biểu diễn
+          </h2>
+          <p class="text-xs text-sky-100/90 mt-0.5">
+            Mỗi lần nhấn <strong>"Tính Lại &amp; Xuất Biểu Đồ"</strong>, biểu đồ Mặt phẳng phức $Z$ sẽ tự động đặt lại về đúng nghiệm vừa tính và căn chỉnh khung nhìn chuẩn xác.
+          </p>
+        </div>
+      </div>
+
+      <!-- Expression Input Bar -->
+      <div class="relative z-10 flex flex-col md:flex-row gap-3">
+        <div class="flex-1 flex items-center bg-slate-950/85 rounded-xl px-4 py-2.5 shadow-inner border border-sky-400/40 focus-within:border-sky-300">
+          <span class="text-sky-400 font-extrabold mono text-sm md:text-base mr-3 select-none">H(z) =</span>
+          <input
+            type="text"
+            id="hzFormulaInput"
+            value="0.19 * (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2)"
+            onkeydown="if(event.key === 'Enter') evaluateSymbolicHzInput()"
+            placeholder="Ví dụ: (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2) hoặc (z^2 - 1)/(z^2 - 1.2*z + 0.8)"
+            class="w-full bg-transparent text-white font-semibold mono text-sm md:text-base focus:outline-none"
+          />
+        </div>
+        <button
+          onclick="evaluateSymbolicHzInput()"
+          class="bg-[#e11d48] hover:bg-[#be123c] text-white font-extrabold px-6 py-3 rounded-xl text-sm shadow-lg transition whitespace-nowrap flex items-center justify-center gap-2"
+        >
+          <span>⚡ Tính Lại &amp; Xuất Biểu Đồ</span>
+        </button>
+      </div>
+
+      <!-- Quick Sample Function Chips + Feedback -->
+      <div class="relative z-10 flex flex-wrap items-center justify-between gap-3 pt-1">
+        <div class="flex flex-wrap items-center gap-2 text-xs">
+          <span class="text-sky-200 font-semibold">Hàm mẫu thử nhanh:</span>
+          <button
+            onclick="evaluateSymbolicHzInput('1 / (1 - 0.85*z^-1)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            1 / (1 - 0.85*z^-1)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(1 + z^-1) / (1 - 1.4*z^-1 + 0.85*z^-2)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (1 + z^-1) / (1 - 1.4*z^-1 + 0.85*z^-2)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(z^2 - 1) / (z^2 - 1.2*z + 0.75)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (z^2 - 1) / (z^2 - 1.2*z + 0.75)
+          </button>
+          <button
+            onclick="evaluateSymbolicHzInput('(1 - 0.8*z^-1)*(1 + 0.8*z^-1) / (1 + 0.7*z^-2)')"
+            class="px-2.5 py-1 rounded-md bg-white/10 hover:bg-white/20 text-white border border-white/25 mono transition"
+          >
+            (1 - 0.8*z^-1)*(1 + 0.8*z^-1) / (1 + 0.7*z^-2)
+          </button>
+        </div>
+        <span id="exprFeedbackBadge" class="text-xs font-semibold text-emerald-300 bg-emerald-950/70 px-3 py-1 rounded-full border border-emerald-500/40">
+          ✓ Đã sẵn sàng tính toán và biểu diễn
+        </span>
+      </div>
+    </section>
+
+    <!-- 2. SPACIOUS ANALYTICAL OUTPUT PANEL (ALL DISPLAY-MODE LATEX) -->
+    <section class="sci-card p-5 space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-700/40 pb-3">
+        <div class="flex items-center gap-2.5">
+          <span class="w-2.5 h-6 rounded-full bg-sky-500 inline-block"></span>
+          <div>
+            <h3 class="text-base font-extrabold theme-heading uppercase tracking-wide">
+              Kết quả Giải tích &amp; Biểu diễn Toán học Hệ thống LTI
+            </h3>
+            <p class="text-xs theme-muted">
+              Chuẩn hóa tự động dưới dạng phân thức LaTeX Display-Mode sắc nét
+            </p>
+          </div>
+        </div>
+        <span id="stabilityBadge" class="text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">
+          ● Hệ thống Ổn định BIBO
+        </span>
+      </div>
+
+      <!-- Row 1: Rational H(z) and Factored Pole-Zero H(z) -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            <span>1. Hàm truyền dạng Đa thức Tỷ lệ chuẩn hóa theo $z^{-1}$:</span>
+            <span class="text-sky-400 font-bold">Biến đổi Z</span>
+          </div>
+          <div id="latexHzRational" class="math-display-xl py-3 flex items-center justify-center min-h-[84px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="flex items-center justify-between text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            <span>2. Hàm truyền Phân tích theo Nghiệm Cực ($p_k$) &amp; Zero ($z_i$):</span>
+            <span id="latexRocStatement" class="text-rose-400 font-bold"></span>
+          </div>
+          <div id="latexHzFactored" class="math-display-lg py-3 flex items-center justify-center min-h-[84px]"></div>
+        </div>
+      </div>
+
+      <!-- Row 2: Closed-form Impulse Response h[n], Frequency Response H(e^{jw}), and Difference Equation y[n] -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            3. Đáp ứng Xung Giải tích $h[n] = \mathcal{Z}^{-1}\{H(z)\}$:
+          </div>
+          <div id="latexAnalyticalHn" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            4. Biểu thức Đáp ứng Tần số $H\left(e^{j\omega}\right)$:
+          </div>
+          <div id="latexHejw" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+
+        <div class="sci-subcard p-4 flex flex-col justify-between">
+          <div class="text-xs theme-muted font-bold border-b border-slate-700/30 pb-2">
+            5. Phương trình Sai phân Tuyến tính Hệ số Hằng:
+          </div>
+          <div id="latexDiffEq" class="math-display-md py-2 flex items-center justify-center min-h-[68px]"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. INTERACTIVE Z-PLANE & REAL-TIME 60 FPS CHARTS GRID -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- LEFT COLUMN (5 cols): Z-PLANE + ROOT LISTS -->
+      <section class="lg:col-span-5 flex flex-col gap-6">
+
+        <!-- Z-PLANE CARD -->
+        <div id="zPlaneCard" class="sci-card p-5 flex flex-col gap-4 transition">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <div class="flex items-center gap-2.5">
+                <h2 class="text-base font-extrabold theme-heading uppercase">Biểu đồ Mặt phẳng Phức $Z$ ($\text{Im}-\text{Re}$)</h2>
+                <span id="fpsCounter" class="text-xs mono font-bold px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">60 FPS</span>
+              </div>
+              <p class="text-xs theme-muted mt-0.5">
+                Kéo thả <span class="text-rose-400 font-bold">Cực ($\times$)</span> hoặc <span class="text-sky-400 font-bold">Zero ($\circ$)</span> • Chuột phải để xóa • Nhấp đúp để thêm
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5">
+              <button
+                onclick="evaluateSymbolicHzInput()"
+                title="Đặt lại Mặt phẳng phức theo đúng hàm H(z) đang nhập ở trên"
+                class="text-xs font-bold bg-[#0072bc] hover:bg-sky-500 text-white px-3 py-1.5 rounded-lg shadow-sm transition"
+              >
+                🔄 Tính lại theo $H(z)$
+              </button>
+              <button
+                onclick="syncFormulaBoxFromDraggedZPlane()"
+                title="Cập nhật ô nhập H(z) theo vị trí Cực/Zero vừa kéo thả"
+                class="text-xs font-semibold sci-input hover:opacity-80 px-2.5 py-1.5 rounded-lg transition"
+              >
+                ↗ Lấy hàm từ đồ thị
+              </button>
+            </div>
+          </div>
+
+          <!-- Z-Plane Action Toolbar -->
+          <div class="flex flex-wrap items-center justify-between gap-2 sci-subcard p-3 text-xs">
+            <div class="flex items-center gap-1.5">
+              <span class="theme-muted font-semibold mr-1">Chế độ chuột:</span>
+              <button id="modeDragBtn" onclick="setInteractMode('drag')" class="px-3 py-1 rounded-md bg-[#0072bc] text-white font-semibold shadow-sm transition">Kéo thả</button>
+              <button id="modeAddPoleBtn" onclick="setInteractMode('addPole')" class="px-3 py-1 rounded-md sci-input text-rose-500 hover:opacity-80 font-medium transition">+ Cực ($\times$)</button>
+              <button id="modeAddZeroBtn" onclick="setInteractMode('addZero')" class="px-3 py-1 rounded-md sci-input text-sky-400 hover:opacity-80 font-medium transition">+ Zero ($\circ$)</button>
+            </div>
+
+            <div class="flex items-center gap-3">
+              <label class="flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                <input type="checkbox" checked onchange="onConjugateToggle(this.checked)" class="accent-sky-500 rounded" />
+                <span>Đối xứng liên hợp</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer font-medium select-none">
+                <input type="checkbox" checked onchange="onShowVectorsToggle(this.checked)" class="accent-sky-500 rounded" />
+                <span>Vector hình học</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Legend Bar (Highlighting Signature Red ROC Boundary) -->
+          <div class="flex flex-wrap items-center justify-between gap-2 px-3.5 py-2.5 rounded-xl bg-[#070b14] border border-slate-800 text-xs text-slate-200">
+            <div class="flex flex-wrap items-center gap-3.5">
+              <span class="flex items-center gap-1.5">
+                <strong class="text-[#ff453a] text-sm leading-none">×</strong>
+                <span class="text-slate-200 font-medium">Cực ($p_k$)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <strong class="text-sky-400 text-sm leading-none">○</strong>
+                <span class="text-slate-200 font-medium">Zero ($z_i$)</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+                <span class="text-slate-200 font-medium">Điểm $e^{j\omega_0}$</span>
+              </span>
+              <span class="flex items-center gap-1.5">
+                <span class="w-3.5 h-2.5 rounded-sm bg-red-500/25 border-2 border-dashed border-[#ff453a] inline-block"></span>
+                <span class="text-red-300 font-semibold">Giới hạn &amp; Miền ROC</span>
+              </span>
+            </div>
+            <div id="zCursorLatex" class="text-xs text-sky-300 font-medium dark-katex"></div>
+          </div>
+
+          <!-- Z-Plane Canvas -->
+          <div class="relative w-full aspect-square max-h-[430px] mx-auto rounded-xl border-2 border-slate-700/80 overflow-hidden shadow-lg">
+            <canvas id="zPlaneCanvas" class="w-full h-full cursor-grab active:cursor-grabbing"></canvas>
+          </div>
+
+          <!-- Frequency Probe Slider & ROC Controls -->
+          <div class="sci-subcard p-3.5 space-y-3">
+            <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
+              <div class="flex items-center gap-2">
+                <span class="text-amber-400 font-bold">● Tần số khảo sát:</span>
+                <span id="omegaValueLatex" class="font-bold"></span>
+              </div>
+              <div id="vectorGainLatex" class="text-sky-400 font-semibold"></div>
+            </div>
+
+            <input
+              type="range"
+              id="omegaSlider"
+              min="-3.14159"
+              max="3.14159"
+              step="0.01"
+              value="0.7854"
+              oninput="onOmegaSliderChange(this.value)"
+              class="w-full cursor-pointer"
+            />
+
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-700/30 text-xs">
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Chế độ Miền hội tụ (ROC):</label>
+                <select
+                  id="rocTypeSelect"
+                  onchange="onRocTypeChange(this.value)"
+                  class="w-full sci-input rounded-lg px-2.5 py-2 text-xs font-medium focus:border-sky-500 focus:outline-none"
+                >
+                  <option value="causal" selected>Nhân quả (|z| &gt; r_max)</option>
+                  <option value="anticausal">Phản nhân quả (|z| &lt; r_min)</option>
+                  <option value="stable">Chứa |z| = 1 (Hệ ổn định)</option>
+                </select>
+              </div>
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Hệ số khuếch đại $K$:</label>
+                <input
+                  type="number"
+                  id="gainInput"
+                  value="1"
+                  step="0.05"
+                  oninput="onGainChange(this.value)"
+                  class="w-full sci-input rounded-lg px-2.5 py-2 text-xs mono font-semibold focus:border-sky-500 focus:outline-none"
+                />
+              </div>
+              <div class="flex items-end gap-2">
+                <button
+                  onclick="normalizePeakGain()"
+                  class="flex-1 bg-[#0072bc] hover:bg-sky-500 text-white rounded-lg px-2.5 py-2 text-xs font-semibold shadow-sm transition"
+                >
+                  Chuẩn hóa $0\text{ dB}$
+                </button>
+                <button
+                  onclick="clearAllPolesZeros()"
+                  class="bg-rose-500/20 hover:bg-rose-500/30 text-rose-400 border border-rose-500/40 rounded-lg px-2.5 py-2 text-xs font-semibold transition"
+                >
+                  Xóa hết
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- SPACIOUS POLE-ZERO TABLES & ARRAY COEFFICIENTS -->
+        <div class="sci-card p-5 flex flex-col gap-4">
+          <h3 class="text-base font-extrabold theme-heading uppercase">Bảng Tọa độ Nghiệm Cực ($p_k$) &amp; Zero ($z_i$)</h3>
+
+          <div class="space-y-4">
+            <!-- Zeros Table -->
+            <div class="sci-subcard p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-sky-400 uppercase tracking-wide">Danh sách Zero ($B(z) = 0$)</span>
+                <button onclick="addManualRoot('zero')" class="text-xs sci-input hover:opacity-80 px-3 py-1 rounded-md font-semibold transition">+ Thêm Zero</button>
+              </div>
+              <div id="zerosListContainer" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+            </div>
+
+            <!-- Poles Table -->
+            <div class="sci-subcard p-3.5 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-bold text-rose-400 uppercase tracking-wide">Danh sách Cực ($A(z) = 0$)</span>
+                <button onclick="addManualRoot('pole')" class="text-xs sci-input hover:opacity-80 px-3 py-1 rounded-md font-semibold transition">+ Thêm Cực</button>
+              </div>
+              <div id="polesListContainer" class="space-y-1.5 max-h-44 overflow-y-auto pr-1"></div>
+            </div>
+          </div>
+
+          <!-- Optional Array Coefficients Input -->
+          <details class="sci-subcard p-3.5 text-xs">
+            <summary class="cursor-pointer font-bold theme-heading hover:text-sky-400 select-none">
+              ⚙️ Nhập theo mảng hệ số $[b_0, b_1, \dots]$ và $[a_0, a_1, \dots]$
+            </summary>
+            <div class="space-y-3 pt-3 mt-2 border-t border-slate-700/30">
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Mảng hệ số Tử số $B(z)$:</label>
+                <input
+                  type="text"
+                  id="numCoeffsInput"
+                  value="0.19, 0, -0.19"
+                  class="w-full sci-input rounded-lg px-3 py-2 mono text-sky-400 font-semibold"
+                />
+              </div>
+              <div>
+                <label class="block theme-muted font-semibold mb-1">Mảng hệ số Mẫu số $A(z)$:</label>
+                <input
+                  type="text"
+                  id="denCoeffsInput"
+                  value="1, -1.2728, 0.81"
+                  class="w-full sci-input rounded-lg px-3 py-2 mono text-rose-400 font-semibold"
+                />
+              </div>
+              <button
+                onclick="applyCoefficientsFromInput()"
+                class="w-full bg-[#0072bc] hover:bg-sky-500 text-white font-bold py-2.5 rounded-lg shadow transition"
+              >
+                ⚡ Tính Lại Nghiệm &amp; Vẽ Mặt Phẳng Phức
+              </button>
+            </div>
+          </details>
+        </div>
+
+      </section>
+
+      <!-- RIGHT COLUMN (7 cols): SUMMARY METRICS + 3 SPACIOUS CHARTS -->
+      <section class="lg:col-span-7 flex flex-col gap-6">
+
+        <!-- TOP METRICS SUMMARY BAR -->
+        <div class="sci-card p-4 grid grid-cols-2 sm:grid-cols-4 gap-3.5 text-xs">
+          <div class="sci-subcard p-3.5 border-l-4 border-l-red-500">
+            <div class="theme-muted font-semibold mb-1">Giới hạn Miền hội tụ (ROC)</div>
+            <div id="rocSummaryLatex" class="font-bold text-red-400 text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-sky-500">
+            <div class="theme-muted font-semibold mb-1">Bán kính cực lớn nhất</div>
+            <div id="maxPoleRadiusLatex" class="font-bold text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-cyan-400">
+            <div class="theme-muted font-semibold mb-1">Đỉnh biên độ $\max \left|H\left(e^{j\omega}\right)\right|$</div>
+            <div id="peakGainLatex" class="font-bold text-sky-400 text-sm"></div>
+          </div>
+          <div class="sci-subcard p-3.5 border-l-4 border-l-amber-500">
+            <div class="theme-muted font-semibold mb-1">Phân loại Hệ thống LTI</div>
+            <div id="filterTypeText" class="font-bold text-amber-400 text-sm"></div>
+          </div>
+        </div>
+
+        <!-- CHART 1: MAGNITUDE RESPONSE |H(e^{jw})| -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                1. Đồ thị Đáp ứng Biên độ $\left|H\left(e^{j\omega}\right)\right|$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Tích khoảng cách từ điểm $e^{j\omega}$ tới các Zero chia cho tích khoảng cách tới các Cực (Kéo chuột trên đồ thị để quét $\omega_0$)
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <label class="flex items-center gap-1.5 cursor-pointer sci-subcard px-3 py-1.5 font-medium select-none">
+                <input type="checkbox" onchange="onMagDbToggle(this.checked)" class="accent-sky-500" />
+                <span>Thang đo $\text{dB}$ ($20\log_{10}$)</span>
+              </label>
+              <label class="flex items-center gap-1.5 cursor-pointer sci-subcard px-3 py-1.5 font-medium select-none">
+                <input type="checkbox" onchange="onFullFreqToggle(this.checked)" class="accent-sky-500" />
+                <span>Miền $[-\pi, \pi]$</span>
+              </label>
+            </div>
+          </div>
+          <div class="w-full h-[230px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="magCanvas" class="w-full h-full cursor-crosshair"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 2: PHASE RESPONSE & GROUP DELAY -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                2. Đồ thị Đáp ứng Pha $\angle H\left(e^{j\omega}\right)$ &amp; Trễ nhóm $\tau_g(\omega)$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Hiệu tổng góc pha từ các Zero và các Cực • Trễ nhóm $\tau_g(\omega)$ đặc trưng cho độ trễ truyền dẫn của từng thành phần tần số
+              </p>
+            </div>
+            <div class="flex items-center gap-1.5 sci-subcard p-1 text-xs">
+              <button id="phaseModeBtn" onclick="setPhaseChartMode('phase')" class="px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition">
+                Đáp ứng Pha (Độ $^\circ$)
+              </button>
+              <button id="groupDelayModeBtn" onclick="setPhaseChartMode('groupDelay')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                Trễ nhóm $\tau_g(\omega)$
+              </button>
+            </div>
+          </div>
+          <div class="w-full h-[220px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="phaseCanvas" class="w-full h-full cursor-crosshair"></canvas>
+          </div>
+        </div>
+
+        <!-- CHART 3: IMPULSE RESPONSE h[n] & STEP RESPONSE s[n] -->
+        <div class="sci-card p-5 flex flex-col gap-3">
+          <div class="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h3 class="text-base font-extrabold theme-heading">
+                3. Đồ thị Đáp ứng Xung $h[n]$ &amp; Đáp ứng Nhảy bậc $s[n]$
+              </h3>
+              <p class="text-xs theme-muted mt-0.5">
+                Tự động vẽ trên miền $n \ge 0$ (Nhân quả), $n \le 0$ (Phản nhân quả) hoặc hai phía tùy theo Miền hội tụ (ROC)
+              </p>
+            </div>
+            <div class="flex items-center gap-2 text-xs">
+              <div class="flex sci-subcard p-1">
+                <button id="timeImpulseBtn" onclick="setTimeChartMode('impulse')" class="px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition">
+                  Đáp ứng xung $h[n]$
+                </button>
+                <button id="timeStepBtn" onclick="setTimeChartMode('step')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                  Đáp ứng nhảy bậc $s[n]$
+                </button>
+                <button id="timeSignalBtn" onclick="setTimeChartMode('signal')" class="px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition">
+                  Lọc tín hiệu $x[n]$
+                </button>
+              </div>
+              <select
+                onchange="onNumSamplesChange(this.value)"
+                class="sci-input rounded-lg px-2.5 py-1.5 text-xs font-semibold"
+              >
+                <option value="40">N = 40 mẫu</option>
+                <option value="64" selected>N = 64 mẫu</option>
+                <option value="120">N = 120 mẫu</option>
+              </select>
+            </div>
+          </div>
+          <div class="w-full h-[230px] rounded-xl border-2 border-slate-700/80 overflow-hidden relative shadow-lg">
+            <canvas id="impulseCanvas" class="w-full h-full"></canvas>
+          </div>
+        </div>
+
+      </section>
+    </div>
+
+  </main>
+
+  <!-- ==================== TAB 2: STUDY GUIDE (HƯỚNG DẪN HỌC TẬP) ==================== -->
+  <section id="tabGuide" class="hidden flex-1 max-w-[1280px] w-full mx-auto p-4 md:p-6 space-y-6">
+    <div class="sci-card p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/40 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Tài liệu Hướng dẫn Học tập Tương tác • HCMUT</span>
+          <h2 class="text-2xl font-extrabold theme-heading mt-1">Liên hệ giữa Cực/Zero, Miền hội tụ (ROC) và Đáp ứng Tần số Hệ LTI</h2>
+        </div>
+        <button onclick="switchTab('simulator')" class="bg-[#0072bc] hover:bg-sky-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+          ← Quay lại Bộ mô phỏng
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-sky-400 font-bold text-sm">1. Biểu diễn Cực – Zero của $H(z)$</div>
+          <div class="text-xs leading-relaxed">
+            Hàm truyền của hệ thống LTI rời rạc bậc $N$:
+            $$H(z) = \frac{\sum_{m=0}^{M} b_m z^{-m}}{\sum_{k=0}^{N} a_k z^{-k}} = K \frac{\prod_{i=1}^{M} \left(1 - z_i z^{-1}\right)}{\prod_{k=1}^{N} \left(1 - p_k z^{-1}\right)}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li><strong>Zero ($z_i$):</strong> Nghiệm tử số $B(z)=0$. Nếu $z_i = e^{j\omega_0}$ nằm trên đường tròn đơn vị, tần số $\omega_0$ bị triệt tiêu hoàn toàn: $|H(e^{j\omega_0})| = 0$.</li>
+            <li><strong>Pole ($p_k$):</strong> Nghiệm mẫu số $A(z)=0$. Khi cực $p_k = r e^{j\omega_0}$ tiến sát đường tròn đơn vị ($r \to 1$), biên độ tại $\omega_0$ tăng vọt tạo đỉnh cộng hưởng.</li>
+          </ul>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-emerald-400 font-bold text-sm">2. Phương pháp Đánh giá Hình học</div>
+          <div class="text-xs leading-relaxed">
+            Thay $z = e^{j\omega}$ trên đường tròn đơn vị $|z|=1$:
+            $$\left|H\left(e^{j\omega}\right)\right| = |K| \frac{\prod_{i=1}^{M} \left|e^{j\omega} - z_i\right|}{\prod_{k=1}^{N} \left|e^{j\omega} - p_k\right|}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li>Độ lớn $\left|e^{j\omega} - z_i\right|$ chính là chiều dài vector nối từ Zero $z_i$ tới điểm $e^{j\omega}$.</li>
+            <li>Độ lớn $\left|e^{j\omega} - p_k\right|$ chính là chiều dài vector nối từ Cực $p_k$ tới điểm $e^{j\omega}$.</li>
+          </ul>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <div class="text-rose-400 font-bold text-sm">3. Miền hội tụ (ROC) &amp; Ổn định BIBO</div>
+          <div class="text-xs leading-relaxed">
+            Miền hội tụ của biến đổi $Z$:
+            $$\text{ROC} = \left\{ z \in \mathbb{C} : \sum_{n=-\infty}^{\infty} |h[n]| |z|^{-n} < \infty \right\}$$
+          </div>
+          <ul class="text-xs theme-muted space-y-1.5 list-disc pl-4">
+            <li><strong>Hệ nhân quả:</strong> $\text{ROC}: |z| > r_{\max}$. Ổn định BIBO $\iff r_{\max} < 1$.</li>
+            <li><strong>Hệ phản nhân quả:</strong> $\text{ROC}: |z| < r_{\min}$. Ổn định BIBO $\iff r_{\min} > 1$.</li>
+            <li><strong>Tiêu chuẩn tổng quát:</strong> Hệ LTI ổn định BIBO khi và chỉ khi $\text{ROC}$ chứa đường tròn đơn vị $|z|=1$.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Guided Lab Cards -->
+      <div class="pt-2">
+        <h3 class="text-base font-extrabold theme-heading mb-3">🧪 Các Bài Thực hành Tương tác (Nhấn để nạp cấu hình)</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-sky-400 uppercase">Bài Thực hành 1 • Bộ cộng hưởng (Resonator)</span>
+              <h4 class="font-bold theme-heading text-sm">Quan hệ giữa Bán kính Cực $r$ và Độ rộng Băng thông $\Delta\omega_{-3\text{dB}}$</h4>
+              <p class="text-xs theme-muted">
+                Với cặp cực $p_{1,2} = r e^{\pm j\pi/4}$, băng thông $-3\text{ dB}$ xấp xỉ $\Delta\omega \approx 2(1-r)$. Hãy thử kéo cực từ $r = 0.7 \to 0.96$ để quan sát đỉnh cộng hưởng nhọn dần và đáp ứng xung $h[n] \propto r^n \cos(\omega_0 n) u[n]$ tắt dần chậm hơn.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('resonator')" class="self-start bg-[#0072bc] hover:bg-sky-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 1
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-emerald-400 uppercase">Bài Thực hành 2 • Bộ lọc Chắn dải (Notch Filter)</span>
+              <h4 class="font-bold theme-heading text-sm">Triệt tiêu Tần số Nhiễu bằng Zero trên Đường tròn Đơn vị</h4>
+              <p class="text-xs theme-muted">
+                Đặt cặp Zero tại $z_{1,2} = e^{\pm j\pi/3}$ làm $|H(e^{j\pi/3})| = 0$. Đặt thêm cặp Cực tại $p_{1,2} = 0.92 e^{\pm j\pi/3}$ ngay phía sau để thu hẹp hố cắt mà vẫn giữ biên độ phẳng ở các tần số khác.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('notch')" class="self-start bg-emerald-600 hover:bg-emerald-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 2
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-amber-400 uppercase">Bài Thực hành 3 • Hệ thống All-Pass</span>
+              <h4 class="font-bold theme-heading text-sm">Cặp Cực – Zero Đối xứng Nghịch đảo Liên hợp ($p_k = r e^{j\theta}, \; z_k = r^{-1}e^{j\theta}$)</h4>
+              <p class="text-xs theme-muted">
+                Biên độ $|H(e^{j\omega})| = 1$ phẳng tuyệt đối trên toàn dải tần $\omega \in [-\pi, \pi]$, nhưng pha và trễ nhóm $\tau_g(\omega)$ biến thiên mạnh quanh góc $\theta$.
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('allpass')" class="self-start bg-amber-600 hover:bg-amber-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 3
+            </button>
+          </div>
+
+          <div class="sci-subcard p-4 flex flex-col justify-between gap-3">
+            <div class="space-y-1.5">
+              <span class="text-xs font-bold text-rose-400 uppercase">Bài Thực hành 4 • Ổn định &amp; Nhân quả</span>
+              <h4 class="font-bold theme-heading text-sm">Cực nằm ngoài Đường tròn Đơn vị ($|p_k| = 1.07 > 1$)</h4>
+              <p class="text-xs theme-muted">
+                Khi chọn ROC Nhân quả ($|z| > 1.07$), đáp ứng xung $h[n]$ phân kỳ theo hàm mũ. Khi đổi ROC sang Phản nhân quả ($|z| < 1.07$), ROC chứa $|z|=1$ nên $h[n]$ quay sang miền $n \le 0$ và hội tụ ổn định!
+              </p>
+            </div>
+            <button onclick="loadLabAndSwitch('unstable')" class="self-start bg-rose-600 hover:bg-rose-500 text-white px-3.5 py-1.5 rounded-lg text-xs font-bold transition">
+              ▶ Nạp Bài Thực hành 4
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ==================== TAB 3: TECHNICAL DESIGN REPORT ==================== -->
+  <section id="tabReport" class="hidden flex-1 max-w-[1280px] w-full mx-auto p-4 md:p-6 space-y-6">
+    <div class="sci-card p-6 space-y-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 border-b border-slate-700/40 pb-4">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-wider text-sky-400">Báo cáo Thiết kế Công cụ (Đề tài 13) • HCMUT</span>
+          <h2 class="text-2xl font-extrabold theme-heading mt-1">Kiến trúc Tách Module &amp; Giải thuật Toán học DSP</h2>
+        </div>
+        <button onclick="switchTab('simulator')" class="bg-[#0072bc] hover:bg-sky-500 text-white text-xs font-bold px-4 py-2 rounded-lg shadow transition">
+          ← Quay lại Bộ mô phỏng
+        </button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs leading-relaxed">
+        <div class="sci-subcard p-5 space-y-3">
+          <h3 class="text-base font-extrabold theme-heading">1. Bộ Phân tích Biểu thức Đại số $H(z)$ bằng DFT Phức</h3>
+          <p class="theme-muted">
+            Khi người dùng nhập trực tiếp biểu thức $H(z) = \frac{N(z)}{D(z)}$ dưới dạng tự do (như đa thức theo $z$, $z^{-1}$ hoặc tích các nhân tử), hệ thống lấy mẫu $N(e^{j 2\pi k / L})$ và $D(e^{j 2\pi k / L})$ tại $L=32$ điểm trên đường tròn đơn vị rồi thực hiện biến đổi Fourier ngược (IDFT) để trích xuất chính xác các hệ số chuỗi Laurent $b_m, a_k$.
+          </p>
+          <h3 class="text-base font-extrabold theme-heading pt-2">2. Giải thuật Tìm nghiệm Đa thức Durand-Kerner</h3>
+          <p class="theme-muted">
+            Để tìm toàn bộ nghiệm thực và phức của đa thức $P(z) = z^N + c_1 z^{N-1} + \dots + c_N = 0$, hệ thống sử dụng phép lặp đồng thời Weierstrass / Durand-Kerner:
+            $$z_k^{(m+1)} = z_k^{(m)} - \frac{P\left(z_k^{(m)}\right)}{\prod_{j \neq k} \left(z_k^{(m)} - z_j^{(m)}\right)}$$
+          </p>
+        </div>
+
+        <div class="sci-subcard p-5 space-y-3">
+          <h3 class="text-base font-extrabold theme-heading">3. Khai triển Phân thức Tối giản Tìm Công thức Giải tích $h[n]$</h3>
+          <p class="theme-muted">
+            Hàm <code>buildAnalyticalHnLatex()</code> thực hiện chia đa thức kết hợp tính thặng dư (Residue) tại từng cực đơn $p_k$:
+            $$R_k = \left. \left(1 - p_k z^{-1}\right) H(z) \right|_{z = p_k}$$
+            Các cặp cực phức liên hợp $p_{1,2} = r e^{\pm j\omega_0}$ được gom tự động thành hàm dao động điều hòa tắt dần:
+            $$h_k[n] = 2|R_k| \cdot r^n \cos\left(\omega_0 n + \angle R_k\right) u[n]$$
+          </p>
+          <h3 class="text-base font-extrabold theme-heading pt-2">4. Cấu trúc Thư mục Mã nguồn Đã Tách</h3>
+          <ul class="list-disc pl-4 space-y-1 mono text-[11px] text-sky-400 font-semibold">
+            <li>index.html — Giao diện 2 chế độ (Xanh Tối Gốc &amp; Sáng Bách Khoa)</li>
+            <li>css/styles.css — Hệ biến CSS Dual-Theme &amp; KaTeX typography</li>
+            <li>js/dsp.js — Bộ parser biểu thức H(z), Durand-Kerner, PFE tìm h[n]</li>
+            <li>js/charts.js — Đồ thị Im-Re sắc nét, biên ROC đỏ đặc trưng &amp; phổ xanh sáng</li>
+            <li>js/app.js — Quản lý trạng thái, chuyển đổi theme &amp; tính lại mặt phẳng phức</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Separated JavaScript Modules -->
+  <script>
+/**
+ * js/dsp.js
+ * Complete Digital Signal Processing (DSP), Symbolic Expression Parser,
+ * Partial Fraction Expansion (Closed-Form h[n]), and Spacious LaTeX Generator
+ */
+
+class Complex {
+  constructor(re = 0, im = 0) {
+    this.re = re;
+    this.im = im;
+  }
+  add(c) {
+    return new Complex(this.re + c.re, this.im + c.im);
+  }
+  sub(c) {
+    return new Complex(this.re - c.re, this.im - c.im);
+  }
+  mul(c) {
+    return new Complex(
+      this.re * c.re - this.im * c.im,
+      this.re * c.im + this.im * c.re
+    );
+  }
+  div(c) {
+    const d = c.re * c.re + c.im * c.im;
+    if (d < 1e-20) return new Complex(0, 0);
+    return new Complex(
+      (this.re * c.re + this.im * c.im) / d,
+      (this.im * c.re - this.re * c.im) / d
+    );
+  }
+  pow(expRe) {
+    const r = this.abs();
+    if (r < 1e-15) return expRe === 0 ? new Complex(1, 0) : new Complex(0, 0);
+    const theta = this.arg();
+    return Complex.fromPolar(Math.pow(r, expRe), theta * expRe);
+  }
+  abs() {
+    return Math.hypot(this.re, this.im);
+  }
+  arg() {
+    return Math.atan2(this.im, this.re);
+  }
+  conj() {
+    return new Complex(this.re, -this.im);
+  }
+  static fromPolar(r, theta) {
+    return new Complex(r * Math.cos(theta), r * Math.sin(theta));
+  }
+}
+
+/*************************************************************************
+ * 1. SYMBOLIC ALGEBRAIC PARSER FOR H(z) EXPRESSIONS
+ * Supports expressions like:
+ *   (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2)
+ *   (z^2 - 1) / (z^2 - 1.2728*z + 0.81)
+ *   0.25 * (1 + z^-1)^2 / (1 - 0.8*z^-1 + 0.64*z^-2)
+ *************************************************************************/
+
+/**
+ * Tokenize and evaluate a single algebraic polynomial expression P(z) at complex value zVal
+ */
+function evalPolyExprAtZ(exprStr, zVal) {
+  // Normalize string: insert explicit '*' for implicit multiplication like 2z, )z, )(, 2(
+  let s = exprStr
+    .replace(/\s+/g, '')
+    .replace(/,/g, '.')
+    .replace(/(\d|\))(?=[zZ(])/g, '$1*')
+    .replace(/([zZ\)])(?=\d|\()/g, '$1*');
+
+  let pos = 0;
+
+  function peek() {
+    return s[pos];
+  }
+  function consume() {
+    return s[pos++];
+  }
+
+  function parseExpression() {
+    let left = parseTerm();
+    while (pos < s.length && (peek() === '+' || peek() === '-')) {
+      const op = consume();
+      const right = parseTerm();
+      left = op === '+' ? left.add(right) : left.sub(right);
+    }
+    return left;
+  }
+
+  function parseTerm() {
+    let left = parseFactor();
+    while (pos < s.length && (peek() === '*' || peek() === '/')) {
+      const op = consume();
+      const right = parseFactor();
+      left = op === '*' ? left.mul(right) : left.div(right);
+    }
+    return left;
+  }
+
+  function parseFactor() {
+    if (peek() === '+') {
+      consume();
+      return parseFactor();
+    }
+    if (peek() === '-') {
+      consume();
+      return new Complex(0, 0).sub(parseFactor());
+    }
+    let base = parsePrimary();
+    if (pos < s.length && peek() === '^') {
+      consume();
+      let sign = 1;
+      if (peek() === '-' || peek() === '+') {
+        if (consume() === '-') sign = -1;
+      }
+      let expVal = parsePrimary();
+      base = base.pow(sign * expVal.re);
+    }
+    return base;
+  }
+
+  function parsePrimary() {
+    const ch = peek();
+    if (ch === '(') {
+      consume();
+      const val = parseExpression();
+      if (peek() === ')') consume();
+      return val;
+    }
+    if (ch === 'z' || ch === 'Z') {
+      consume();
+      return zVal;
+    }
+    if (ch === 'j' || ch === 'i') {
+      consume();
+      return new Complex(0, 1);
+    }
+    // Parse number
+    let numStr = '';
+    while (pos < s.length && /[0-9.]/.test(peek())) {
+      numStr += consume();
+    }
+    const val = parseFloat(numStr);
+    if (Number.isNaN(val)) {
+      throw new Error(`Ký tự không hợp lệ gần "${s.slice(pos)}"`);
+    }
+    return new Complex(val, 0);
+  }
+
+  const result = parseExpression();
+  if (pos < s.length) {
+    throw new Error(`Cú pháp dư thừa tại "${s.slice(pos)}"`);
+  }
+  return result;
+}
+
+/**
+ * Split top-level '/' between Numerator B(z) and Denominator A(z)
+ */
+function splitTopLevelFraction(expr) {
+  let depth = 0;
+  let splitIdx = -1;
+  for (let i = 0; i < expr.length; i++) {
+    const c = expr[i];
+    if (c === '(' || c === '[') depth++;
+    else if (c === ')' || c === ']') depth--;
+    else if (c === '/' && depth === 0) {
+      splitIdx = i;
+      break;
+    }
+  }
+  if (splitIdx === -1) {
+    return { numExpr: expr.trim(), denExpr: '1' };
+  }
+  return {
+    numExpr: expr.slice(0, splitIdx).trim(),
+    denExpr: expr.slice(splitIdx + 1).trim()
+  };
+}
+
+/**
+ * Parse a full Transfer Function string H(z) into { bCoeffs, aCoeffs } in powers of z^{-1}
+ * Uses 32-point Complex DFT inversion on the unit circle to extract exact polynomial coefficients
+ */
+function parseTransferFunctionString(rawStr) {
+  let cleaned = rawStr.trim();
+  // Remove leading "H(z) =" if user typed it
+  cleaned = cleaned.replace(/^H\s*\(\s*z\s*\)\s*=\s*/i, '');
+  if (!cleaned) throw new Error('Biểu thức trống');
+
+  const { numExpr, denExpr } = splitTopLevelFraction(cleaned);
+  const L = 32;
+  const numSamples = new Array(L);
+  const denSamples = new Array(L);
+
+  for (let k = 0; k < L; k++) {
+    const w = (2 * Math.PI * k) / L;
+    const zVal = Complex.fromPolar(1.0, w);
+    numSamples[k] = evalPolyExprAtZ(numExpr, zVal);
+    denSamples[k] = evalPolyExprAtZ(denExpr, zVal);
+  }
+
+  // Inverse DFT to extract coefficients of z^{-m} (m = 0..15) and z^{+p} (m = L-p)
+  const extractLaurent = samples => {
+    const c = new Float64Array(L);
+    for (let m = 0; m < L; m++) {
+      let sumRe = 0;
+      for (let k = 0; k < L; k++) {
+        const ang = (2 * Math.PI * k * m) / L;
+        sumRe += samples[k].re * Math.cos(ang) - samples[k].im * Math.sin(ang);
+      }
+      const val = sumRe / L;
+      c[m] = Math.abs(val) < 1e-9 ? 0 : val;
+    }
+    return c;
+  };
+
+  const bLaurent = extractLaurent(numSamples);
+  const aLaurent = extractLaurent(denSamples);
+
+  // Detect highest positive power of z (stored at indices L - p, p = 1..12)
+  let maxPosPower = 0;
+  for (let p = 1; p <= 12; p++) {
+    if (Math.abs(bLaurent[L - p]) > 1e-8 || Math.abs(aLaurent[L - p]) > 1e-8) {
+      maxPosPower = p;
+    }
+  }
+
+  // Shift both polynomials by z^{-maxPosPower} so all powers are in z^{-m} (m >= 0)
+  const bShifted = [];
+  const aShifted = [];
+  for (let m = 0; m <= 16; m++) {
+    const idx = (m - maxPosPower + L) % L;
+    bShifted.push(bLaurent[idx]);
+    aShifted.push(aLaurent[idx]);
+  }
+
+  // Trim trailing zeros
+  while (bShifted.length > 1 && Math.abs(bShifted[bShifted.length - 1]) < 1e-8) bShifted.pop();
+  while (aShifted.length > 1 && Math.abs(aShifted[aShifted.length - 1]) < 1e-8) aShifted.pop();
+
+  // Normalize by leading non-zero denominator coefficient
+  let a0 = aShifted[0];
+  if (Math.abs(a0) < 1e-9) {
+    const firstIdx = aShifted.findIndex(v => Math.abs(v) > 1e-9);
+    a0 = firstIdx !== -1 ? aShifted[firstIdx] : 1;
+  }
+
+  return {
+    bCoeffs: bShifted.map(v => Number((v / a0).toFixed(6))),
+    aCoeffs: aShifted.map(v => Number((v / a0).toFixed(6)))
+  };
+}
+
+/*************************************************************************
+ * 2. POLYNOMIAL EXPANSION & DURAND-KERNER ROOT SOLVER
+ *************************************************************************/
+
+function rootsToPoly(roots) {
+  let coeffs = [new Complex(1, 0)];
+  for (const r of roots) {
+    const next = new Array(coeffs.length + 1).fill(null).map(() => new Complex(0, 0));
+    for (let i = 0; i < coeffs.length; i++) {
+      next[i] = next[i].add(coeffs[i]);
+      next[i + 1] = next[i + 1].sub(coeffs[i].mul(r));
+    }
+    coeffs = next;
+  }
+  return coeffs.map(c => (Math.abs(c.re) < 1e-11 ? 0 : c.re));
+}
+
+function findPolynomialRoots(realCoeffs) {
+  let arr = realCoeffs.slice();
+  while (arr.length > 1 && Math.abs(arr[0]) < 1e-12) arr.shift();
+  while (arr.length > 1 && Math.abs(arr[arr.length - 1]) < 1e-12) arr.pop();
+
+  const n = arr.length - 1;
+  if (n <= 0) return [];
+
+  const a0 = arr[0];
+  const norm = arr.map(v => new Complex(v / a0, 0));
+
+  let roots = [];
+  for (let k = 0; k < n; k++) {
+    const angle = (2 * Math.PI * k) / n + 0.3719;
+    roots.push(Complex.fromPolar(0.65 + 0.07 * (k % 3), angle));
+  }
+
+  for (let iter = 0; iter < 90; iter++) {
+    let maxDiff = 0;
+    const nextRoots = roots.slice();
+    for (let i = 0; i < n; i++) {
+      const zi = roots[i];
+      let pz = norm[0];
+      for (let j = 1; j <= n; j++) {
+        pz = pz.mul(zi).add(norm[j]);
+      }
+      let denom = new Complex(1, 0);
+      for (let j = 0; j < n; j++) {
+        if (i !== j) {
+          let diff = zi.sub(roots[j]);
+          if (diff.abs() < 1e-12) diff = new Complex(1e-7, -1e-7);
+          denom = denom.mul(diff);
+        }
+      }
+      const delta = pz.div(denom);
+      nextRoots[i] = zi.sub(delta);
+      maxDiff = Math.max(maxDiff, delta.abs());
+    }
+    roots = nextRoots;
+    if (maxDiff < 1e-11) break;
+  }
+
+  return roots.map(r => new Complex(
+    Math.abs(r.re) < 1e-8 ? 0 : r.re,
+    Math.abs(r.im) < 1e-7 ? 0 : r.im
+  ));
+}
+
+/*************************************************************************
+ * 3. FREQUENCY RESPONSE, ROC & TIME-DOMAIN SOLVERS
+ *************************************************************************/
+
+function evaluateHzAtOmega(bCoeffs, aCoeffs, w) {
+  let numRe = 0, numIm = 0;
+  for (let m = 0; m < bCoeffs.length; m++) {
+    const ang = -w * m;
+    numRe += bCoeffs[m] * Math.cos(ang);
+    numIm += bCoeffs[m] * Math.sin(ang);
+  }
+  let denRe = 0, denIm = 0;
+  for (let k = 0; k < aCoeffs.length; k++) {
+    const ang = -w * k;
+    denRe += aCoeffs[k] * Math.cos(ang);
+    denIm += aCoeffs[k] * Math.sin(ang);
+  }
+  const numC = new Complex(numRe, numIm);
+  const denC = new Complex(denRe, denIm);
+  return denC.abs() < 1e-12 ? new Complex(1e6, 0) : numC.div(denC);
+}
+
+function evaluateFrequencyResponse(bCoeffs, aCoeffs, fullRange = false, numPoints = 512) {
+  const omegas = new Float64Array(numPoints);
+  const mags = new Float64Array(numPoints);
+  const phasesDeg = new Float64Array(numPoints);
+  const groupDelay = new Float64Array(numPoints);
+  const rawPhases = new Float64Array(numPoints);
+
+  const wMin = fullRange ? -Math.PI : 0;
+  const wMax = Math.PI;
+
+  for (let i = 0; i < numPoints; i++) {
+    const w = wMin + (i / (numPoints - 1)) * (wMax - wMin);
+    omegas[i] = w;
+    const H = evaluateHzAtOmega(bCoeffs, aCoeffs, w);
+    mags[i] = H.abs();
+    rawPhases[i] = H.arg();
+    phasesDeg[i] = (rawPhases[i] * 180) / Math.PI;
+  }
+
+  const unwrapped = new Float64Array(numPoints);
+  unwrapped[0] = rawPhases[0];
+  for (let i = 1; i < numPoints; i++) {
+    let dp = rawPhases[i] - rawPhases[i - 1];
+    while (dp > Math.PI) dp -= 2 * Math.PI;
+    while (dp < -Math.PI) dp += 2 * Math.PI;
+    unwrapped[i] = unwrapped[i - 1] + dp;
+  }
+
+  const dw = (wMax - wMin) / (numPoints - 1);
+  for (let i = 0; i < numPoints; i++) {
+    if (i === 0) {
+      groupDelay[i] = -(unwrapped[1] - unwrapped[0]) / dw;
+    } else if (i === numPoints - 1) {
+      groupDelay[i] = -(unwrapped[i] - unwrapped[i - 1]) / dw;
+    } else {
+      groupDelay[i] = -(unwrapped[i + 1] - unwrapped[i - 1]) / (2 * dw);
+    }
+    if (Math.abs(groupDelay[i]) > 150) {
+      groupDelay[i] = Math.sign(groupDelay[i]) * 150;
+    }
+  }
+
+  return { omegas, mags, phasesDeg, groupDelay };
+}
+
+function analyzeRocAndStability(poles, rocType) {
+  const poleRadii = poles.map(p => p.abs()).filter(r => r > 1e-9);
+  const rMax = poleRadii.length > 0 ? Math.max(...poleRadii) : 0;
+  const rMin = poleRadii.length > 0 ? Math.min(...poleRadii) : Infinity;
+  const poleOnUnitCircle = poleRadii.some(r => Math.abs(r - 1.0) < 0.008);
+
+  let rocInner = 0;
+  let rocOuter = Infinity;
+  let rocLatex = '|z| > 0 \\;\\text{(Hệ FIR)}';
+  let isStable = true;
+
+  if (poleRadii.length === 0) {
+    rocInner = 0;
+    rocOuter = Infinity;
+    rocLatex = '|z| > 0 \\;\\text{(Hệ FIR)}';
+    isStable = true;
+  } else if (rocType === 'causal') {
+    rocInner = rMax;
+    rocOuter = Infinity;
+    rocLatex = `|z| > ${rMax.toFixed(3)}`;
+    isStable = rMax < 1.0 - 0.008;
+  } else if (rocType === 'anticausal') {
+    rocInner = 0;
+    rocOuter = rMin;
+    rocLatex = `|z| < ${rMin.toFixed(3)}`;
+    isStable = rMin > 1.0 + 0.008;
+  } else {
+    if (poleOnUnitCircle) {
+      rocInner = rMax;
+      rocOuter = Infinity;
+      rocLatex = '\\nexists\\text{ ROC chứa } |z|=1';
+      isStable = false;
+    } else {
+      const inside = poleRadii.filter(r => r < 1.0);
+      const outside = poleRadii.filter(r => r > 1.0);
+      rocInner = inside.length ? Math.max(...inside) : 0;
+      rocOuter = outside.length ? Math.min(...outside) : Infinity;
+
+      if (rocOuter === Infinity) {
+        rocLatex = `|z| > ${rocInner.toFixed(3)}`;
+      } else if (rocInner === 0) {
+        rocLatex = `|z| < ${rocOuter.toFixed(3)}`;
+      } else {
+        rocLatex = `${rocInner.toFixed(3)} < |z| < ${rocOuter.toFixed(3)}`;
+      }
+      isStable = true;
+    }
+  }
+
+  return { rMax, rMin, rocInner, rocOuter, rocLatex, isStable, poleOnUnitCircle };
+}
+
+function computeTimeDomainResponse(bCoeffs, aCoeffs, poles, rocType, numSamples = 64, mode = 'impulse') {
+  const { isStable, rMax } = analyzeRocAndStability(poles, rocType);
+
+  if (rocType === 'causal' || (rocType === 'stable' && rMax < 1.0)) {
+    const nIndices = new Int32Array(numSamples);
+    const x = new Float64Array(numSamples);
+    const y = new Float64Array(numSamples);
+    const a0 = Math.abs(aCoeffs[0]) < 1e-12 ? 1 : aCoeffs[0];
+
+    for (let n = 0; n < numSamples; n++) {
+      nIndices[n] = n;
+      if (mode === 'impulse') x[n] = n === 0 ? 1 : 0;
+      else if (mode === 'step') x[n] = 1;
+      else x[n] = Math.cos(0.12 * Math.PI * n) + 0.7 * Math.cos(0.65 * Math.PI * n);
+
+      let acc = 0;
+      for (let m = 0; m < bCoeffs.length; m++) {
+        if (n - m >= 0) acc += bCoeffs[m] * x[n - m];
+      }
+      for (let k = 1; k < aCoeffs.length; k++) {
+        if (n - k >= 0) acc -= aCoeffs[k] * y[n - k];
+      }
+      y[n] = acc / a0;
+      if (Math.abs(y[n]) > 1e5) y[n] = Math.sign(y[n]) * 1e5;
+    }
+    return { nIndices, x, y };
+  }
+
+  if (isStable) {
+    const Nfft = 512;
+    const Hre = new Float64Array(Nfft);
+    const Him = new Float64Array(Nfft);
+    for (let k = 0; k < Nfft; k++) {
+      const w = (2 * Math.PI * k) / Nfft;
+      const H = evaluateHzAtOmega(bCoeffs, aCoeffs, w);
+      Hre[k] = H.re;
+      Him[k] = H.im;
+    }
+
+    const nIndices = new Int32Array(numSamples);
+    const x = new Float64Array(numSamples);
+    const y = new Float64Array(numSamples);
+    const startN = rocType === 'anticausal' ? -(numSamples - 1) : -Math.floor(numSamples / 2);
+
+    for (let idx = 0; idx < numSamples; idx++) {
+      const n = startN + idx;
+      nIndices[idx] = n;
+      x[idx] = n === 0 ? 1 : 0;
+      let sum = 0;
+      for (let k = 0; k < Nfft; k++) {
+        const ang = (2 * Math.PI * k * n) / Nfft;
+        sum += Hre[k] * Math.cos(ang) - Him[k] * Math.sin(ang);
+      }
+      y[idx] = sum / Nfft;
+    }
+
+    if (mode === 'step') {
+      let running = 0;
+      for (let idx = 0; idx < numSamples; idx++) {
+        running += y[idx];
+        y[idx] = running;
+      }
+    }
+    return { nIndices, x, y };
+  }
+
+  // Unstable Anti-Causal
+  const nIndices = new Int32Array(numSamples);
+  const x = new Float64Array(numSamples);
+  const y = new Float64Array(numSamples);
+
+  let aLastIdx = aCoeffs.length - 1;
+  while (aLastIdx > 0 && Math.abs(aCoeffs[aLastIdx]) < 1e-12) aLastIdx--;
+  const aN = aCoeffs[aLastIdx] || 1;
+
+  for (let idx = numSamples - 1; idx >= 0; idx--) {
+    const n = idx - (numSamples - 1);
+    nIndices[idx] = n;
+    x[idx] = n === 0 ? 1 : 0;
+  }
+
+  const yMap = new Map();
+  const xMap = new Map();
+  xMap.set(0, 1);
+
+  for (let step = 0; step < numSamples; step++) {
+    const n = -step;
+    const shiftN = n + aLastIdx;
+    let acc = 0;
+    for (let m = 0; m < bCoeffs.length; m++) {
+      acc += bCoeffs[m] * (xMap.get(shiftN - m) || 0);
+    }
+    for (let k = 0; k < aLastIdx; k++) {
+      acc -= aCoeffs[k] * (yMap.get(shiftN - k) || 0);
+    }
+    let val = acc / aN;
+    if (Math.abs(val) > 1e5) val = Math.sign(val) * 1e5;
+    yMap.set(n, val);
+  }
+
+  for (let idx = 0; idx < numSamples; idx++) {
+    y[idx] = yMap.get(nIndices[idx]) || 0;
+  }
+  return { nIndices, x, y };
+}
+
+/*************************************************************************
+ * 4. SPACIOUS LATEX FORMULA & CLOSED-FORM h[n] GENERATORS
+ *************************************************************************/
+
+function formatNum(num, decimals = 3) {
+  if (Math.abs(num) < 1e-5) return '0';
+  return Number(num.toFixed(decimals)).toString();
+}
+
+function buildPolynomialLatex(coeffs, variable = 'z') {
+  const terms = [];
+  for (let i = 0; i < coeffs.length; i++) {
+    const c = coeffs[i];
+    if (Math.abs(c) < 1e-5 && coeffs.length > 1) continue;
+    const absC = Math.abs(c);
+    const sign = c < 0 ? '-' : terms.length > 0 ? '+' : '';
+    const coeffStr =
+      i === 0 || Math.abs(absC - 1) > 1e-4 ? formatNum(absC, 3) : '';
+    let varPart = '';
+    if (i === 1) {
+      varPart = variable === 'z' ? 'z^{-1}' : 'e^{-j\\omega}';
+    } else if (i > 1) {
+      varPart = variable === 'z' ? `z^{-${i}}` : `e^{-j${i}\\omega}`;
+    }
+    terms.push(`${sign} ${coeffStr}${varPart}`.trim());
+  }
+  return terms.length > 0 ? terms.join(' ') : '0';
+}
+
+function buildFactoredLatex(zeros, poles, gain) {
+  const formatFactors = roots => {
+    if (roots.length === 0) return '1';
+    const used = new Array(roots.length).fill(false);
+    const factors = [];
+
+    for (let i = 0; i < roots.length; i++) {
+      if (used[i]) continue;
+      const r = roots[i];
+      used[i] = true;
+
+      if (Math.abs(r.re) < 1e-4 && Math.abs(r.im) < 1e-4) {
+        factors.push('1');
+        continue;
+      }
+
+      if (Math.abs(r.im) > 1e-3) {
+        let conjIdx = -1;
+        for (let j = i + 1; j < roots.length; j++) {
+          if (
+            !used[j] &&
+            Math.abs(roots[j].re - r.re) < 0.03 &&
+            Math.abs(roots[j].im + r.im) < 0.03
+          ) {
+            conjIdx = j;
+            break;
+          }
+        }
+        if (conjIdx !== -1) {
+          used[conjIdx] = true;
+          const rad = r.abs();
+          const thetaPi = Math.abs(r.arg()) / Math.PI;
+          factors.push(
+            `\\left(1 - ${formatNum(rad, 2)}e^{j${formatNum(thetaPi, 2)}\\pi}z^{-1}\\right)\\left(1 - ${formatNum(rad, 2)}e^{-j${formatNum(thetaPi, 2)}\\pi}z^{-1}\\right)`
+          );
+          continue;
+        }
+      }
+
+      const sign = r.re >= 0 ? '-' : '+';
+      factors.push(`\\left(1 ${sign} ${formatNum(Math.abs(r.re), 2)}z^{-1}\\right)`);
+    }
+    return factors.join(' \\cdot ');
+  };
+
+  const kStr = formatNum(gain, 3);
+  const numF = formatFactors(zeros);
+  const denF = formatFactors(poles);
+  if (poles.length === 0) {
+    return `H(z) = ${kStr} \\cdot ${numF}`;
+  }
+  return `H(z) = ${kStr} \\cdot \\frac{${numF}}{${denF}}`;
+}
+
+function buildDifferenceEquationLatex(bCoeffs, aCoeffs) {
+  const rhs = [];
+  for (let m = 0; m < bCoeffs.length; m++) {
+    const c = bCoeffs[m];
+    if (Math.abs(c) < 1e-4) continue;
+    const sign = c < 0 ? '-' : rhs.length > 0 ? '+' : '';
+    const absVal = Math.abs(c);
+    const valStr = Math.abs(absVal - 1) < 1e-4 ? '' : formatNum(absVal, 3);
+    const xTerm = m === 0 ? 'x[n]' : `x[n-${m}]`;
+    rhs.push(`${sign} ${valStr}${xTerm}`);
+  }
+  for (let k = 1; k < aCoeffs.length; k++) {
+    const c = -aCoeffs[k];
+    if (Math.abs(c) < 1e-4) continue;
+    const sign = c < 0 ? '-' : rhs.length > 0 ? '+' : '';
+    const absVal = Math.abs(c);
+    const valStr = Math.abs(absVal - 1) < 1e-4 ? '' : formatNum(absVal, 3);
+    rhs.push(`${sign} ${valStr}y[n-${k}]`);
+  }
+  return `y[n] = ${rhs.length > 0 ? rhs.join(' ') : '0'}`;
+}
+
+/**
+ * Compute Closed-Form Analytical Impulse Response h[n] via Polynomial Long Division + Residues
+ */
+function buildAnalyticalHnLatex(bCoeffs, aCoeffs, poles, rocType) {
+  // Trim trailing near-zero coefficients
+  let b = bCoeffs.slice();
+  let a = aCoeffs.slice();
+  while (b.length > 1 && Math.abs(b[b.length - 1]) < 1e-7) b.pop();
+  while (a.length > 1 && Math.abs(a[a.length - 1]) < 1e-7) a.pop();
+
+  // Case 1: Pure FIR system (no poles)
+  if (poles.length === 0 || a.length <= 1) {
+    const terms = [];
+    for (let m = 0; m < b.length; m++) {
+      if (Math.abs(b[m]) < 1e-4) continue;
+      const sign = b[m] < 0 ? '-' : terms.length > 0 ? '+' : '';
+      const absC = Math.abs(b[m]);
+      const cStr = Math.abs(absC - 1) < 1e-4 ? '' : formatNum(absC, 3);
+      const dStr = m === 0 ? '\\delta[n]' : `\\delta[n-${m}]`;
+      terms.push(`${sign} ${cStr}${dStr}`);
+    }
+    return `h[n] = ${terms.length ? terms.join(' ') : '0'}`;
+  }
+
+  // Polynomial long division in z^{-1} (from highest degree down) if deg(B) >= deg(A)
+  let rem = b.slice();
+  const degA = a.length - 1;
+  const firTerms = new Array(Math.max(0, rem.length - degA)).fill(0);
+
+  for (let m = rem.length - 1; m >= degA; m--) {
+    const q = rem[m] / a[degA];
+    const qIdx = m - degA;
+    firTerms[qIdx] = q;
+    for (let k = 0; k <= degA; k++) {
+      rem[qIdx + k] -= q * a[k];
+    }
+  }
+
+  const terms = [];
+  for (let m = 0; m < firTerms.length; m++) {
+    const c = firTerms[m];
+    if (Math.abs(c) < 1e-4) continue;
+    const sign = c < 0 ? '-' : terms.length > 0 ? '+' : '';
+    const absC = Math.abs(c);
+    const cStr = Math.abs(absC - 1) < 1e-4 ? '' : formatNum(absC, 3);
+    const dStr = m === 0 ? '\\delta[n]' : `\\delta[n-${m}]`;
+    terms.push(`${sign} ${cStr}${dStr}`);
+  }
+
+  // Compute residues R_k for the strictly proper remainder R(z^{-1}) / A(z^{-1})
+  // R_k = R(p_k^{-1}) / \prod_{j != k} (1 - p_j p_k^{-1})
+  const used = new Array(poles.length).fill(false);
+
+  for (let k = 0; k < poles.length; k++) {
+    if (used[k]) continue;
+    const pk = poles[k];
+    if (pk.abs() < 1e-5) continue;
+    used[k] = true;
+
+    // Check for repeated root
+    const isRepeated = poles.some((p, j) => j !== k && p.sub(pk).abs() < 0.02);
+    if (isRepeated) {
+      // Fallback to first 4 numerical impulse samples when multiple poles coalesce
+      return buildNumericalSeriesHnLatex(bCoeffs, aCoeffs, poles, rocType);
+    }
+
+    const invPk = new Complex(1, 0).div(pk);
+    // Evaluate remainder polynomial rem(z^{-1}) at z^{-1} = p_k^{-1}
+    let numVal = new Complex(0, 0);
+    for (let m = 0; m < rem.length; m++) {
+      numVal = numVal.add(invPk.pow(m).mul(new Complex(rem[m], 0)));
+    }
+
+    let denVal = new Complex(1, 0);
+    for (let j = 0; j < poles.length; j++) {
+      if (j !== k) {
+        const factor = new Complex(1, 0).sub(poles[j].mul(invPk));
+        denVal = denVal.mul(factor);
+      }
+    }
+    const residue = numVal.div(denVal);
+
+    // Determine whether this pole is causal (right-sided u[n]) or anti-causal (left-sided -u[-n-1])
+    const isCausalPole =
+      rocType === 'causal' || (rocType === 'stable' && pk.abs() < 1.0);
+    const stepStr = isCausalPole ? 'u[n]' : 'u[-n-1]';
+    const rocSignFlip = isCausalPole ? 1 : -1;
+
+    // Check if pk has a complex conjugate partner
+    if (Math.abs(pk.im) > 1e-3) {
+      const conjIdx = poles.findIndex(
+        (p, j) => !used[j] && Math.abs(p.re - pk.re) < 0.03 && Math.abs(p.im + pk.im) < 0.03
+      );
+      if (conjIdx !== -1) {
+        used[conjIdx] = true;
+        // Combine 2 * |R_k| * r^n * cos(w_0 n + arg(R_k))
+        const amp = 2 * residue.abs() * rocSignFlip;
+        if (Math.abs(amp) < 1e-4) continue;
+        const rStr = formatNum(pk.abs(), 2);
+        const wPi = formatNum(Math.abs(pk.arg()) / Math.PI, 2);
+        const phaseRad = pk.im >= 0 ? residue.arg() : -residue.arg();
+        const phaseDeg = Math.round((phaseRad * 180) / Math.PI);
+        const phasePart =
+          Math.abs(phaseDeg) <= 2
+            ? ''
+            : phaseDeg > 0
+            ? ` + ${phaseDeg}^\\circ`
+            : ` - ${Math.abs(phaseDeg)}^\\circ`;
+
+        const sign = amp < 0 ? '-' : terms.length > 0 ? '+' : '';
+        terms.push(
+          `${sign} ${formatNum(Math.abs(amp), 3)}\\left(${rStr}\\right)^n \\cos\\left(${wPi}\\pi n${phasePart}\\right)${stepStr}`
+        );
+        continue;
+      }
+    }
+
+    // Real pole term: R_k * (p_k)^n * u[n]
+    const amp = residue.re * rocSignFlip;
+    if (Math.abs(amp) < 1e-4) continue;
+    const sign = amp < 0 ? '-' : terms.length > 0 ? '+' : '';
+    const pStr = pk.re < 0 ? `\\left(${formatNum(pk.re, 2)}\\right)^n` : `\\left(${formatNum(pk.re, 2)}\\right)^n`;
+    terms.push(`${sign} ${formatNum(Math.abs(amp), 3)}${pStr}${stepStr}`);
+  }
+
+  return `h[n] = ${terms.length > 0 ? terms.join(' ') : '0'}`;
+}
+
+function buildNumericalSeriesHnLatex(bCoeffs, aCoeffs, poles, rocType) {
+  const { nIndices, y } = computeTimeDomainResponse(bCoeffs, aCoeffs, poles, rocType, 6, 'impulse');
+  const terms = [];
+  for (let i = 0; i < Math.min(5, y.length); i++) {
+    if (Math.abs(y[i]) < 1e-4) continue;
+    const n = nIndices[i];
+    const sign = y[i] < 0 ? '-' : terms.length > 0 ? '+' : '';
+    const dStr = n === 0 ? '\\delta[n]' : n > 0 ? `\\delta[n-${n}]` : `\\delta[n+${Math.abs(n)}]`;
+    terms.push(`${sign} ${formatNum(Math.abs(y[i]), 3)}${dStr}`);
+  }
+  return `h[n] = ${terms.join(' ')} + \\dots`;
+}
+
+/**
+ * js/charts.js
+ * High-DPI 60 FPS HTML5 Canvas Renderers
+ * - Supports Dual Theme: Dark Mode (Xanh Tối Gốc #070b14) & Light Mode (Sáng #ffffff)
+ * - High-visibility Re(z) / Im(z) axes with tick marks & arrowheads
+ * - Signature Red ROC Boundary Circle (#ff3b30 / #ef4444) & distinct ROC shading
+ * - Vibrant, Soft Sky-Blue Magnitude Spectrum (#38bdf8 / #60a5fa) with rich gradient fill
+ */
+
+function setupHiDPICanvas(canvas) {
+  const dpr = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
+  const w = Math.max(10, Math.floor(rect.width * dpr));
+  const h = Math.max(10, Math.floor(rect.height * dpr));
+  if (canvas.width !== w || canvas.height !== h) {
+    canvas.width = w;
+    canvas.height = h;
+  }
+  const ctx = canvas.getContext('2d');
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  return { ctx, width: rect.width, height: rect.height };
+}
+
+function getZScale(width, height, maxRadiusRange = 1.42) {
+  const size = Math.min(width, height);
+  const effectiveRange = Math.max(1.38, maxRadiusRange);
+  return (size * 0.43) / effectiveRange;
+}
+
+function zToScreen(re, im, width, height, maxRadiusRange = 1.42) {
+  const scale = getZScale(width, height, maxRadiusRange);
+  const cx = width / 2;
+  const cy = height / 2;
+  return {
+    x: cx + re * scale,
+    y: cy - im * scale,
+    scale,
+    cx,
+    cy
+  };
+}
+
+function screenToZ(x, y, width, height, maxRadiusRange = 1.42) {
+  const scale = getZScale(width, height, maxRadiusRange);
+  const cx = width / 2;
+  const cy = height / 2;
+  return new Complex((x - cx) / scale, (cy - y) / scale);
+}
+
+/**
+ * 1. Draw Interactive Z-Plane Canvas (Crystal-Clear Im-Re Axes + Signature Red ROC Boundary)
+ */
+function drawZPlaneCanvas(state) {
+  const canvas = document.getElementById('zPlaneCanvas');
+  if (!canvas) return;
+  const { ctx, width, height } = setupHiDPICanvas(canvas);
+  const isLight = state.theme === 'light';
+
+  // Canvas Background
+  ctx.fillStyle = isLight ? '#ffffff' : '#070b14';
+  ctx.fillRect(0, 0, width, height);
+
+  const maxR = state.zViewRange || 1.42;
+  const { scale, cx, cy } = zToScreen(0, 0, width, height, maxR);
+  const rocInfo = analyzeRocAndStability(state.poles, state.rocType);
+  const { rocInner, rocOuter } = rocInfo;
+
+  // 1. Region of Convergence (ROC) Shading & Signature Red Boundary Circle
+  ctx.save();
+  const maxCanvasRadius = Math.hypot(width, height);
+  const rInPx = Math.min(maxCanvasRadius, rocInner * scale);
+  const rOutPx = rocOuter === Infinity ? maxCanvasRadius : Math.min(maxCanvasRadius, rocOuter * scale);
+
+  if (rOutPx > rInPx + 0.5) {
+    ctx.beginPath();
+    ctx.arc(cx, cy, rOutPx, 0, 2 * Math.PI, false);
+    if (rInPx > 0.5) {
+      ctx.arc(cx, cy, rInPx, 0, 2 * Math.PI, true);
+    }
+    // Signature Red/Rose ROC Shading
+    ctx.fillStyle = isLight
+      ? 'rgba(239, 68, 68, 0.10)'
+      : 'rgba(239, 68, 68, 0.15)';
+    ctx.fill();
+
+    // Signature Bright Red Dashed ROC Boundary Circle (#ff3b30 / #ef4444)
+    ctx.setLineDash([8, 5]);
+    ctx.lineWidth = 2.4;
+    ctx.strokeStyle = isLight ? '#dc2626' : '#ff453a';
+
+    if (rocInner > 0.01 && rocInner < 8) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, rInPx, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      // Label the Red ROC Boundary directly on the Z-Plane
+      ctx.setLineDash([]);
+      ctx.font = '600 11px JetBrains Mono, monospace';
+      ctx.fillStyle = isLight ? '#dc2626' : '#ff6961';
+      const labelAngle = -Math.PI / 4;
+      const lx = cx + (rInPx + 8) * Math.cos(labelAngle);
+      const ly = cy - (rInPx + 8) * Math.sin(labelAngle);
+      ctx.fillText(`Biên ROC |z|=${rocInner.toFixed(2)}`, lx, ly);
+    }
+    if (rocOuter < 8) {
+      ctx.setLineDash([8, 5]);
+      ctx.beginPath();
+      ctx.arc(cx, cy, rOutPx, 0, 2 * Math.PI);
+      ctx.stroke();
+
+      ctx.setLineDash([]);
+      ctx.font = '600 11px JetBrains Mono, monospace';
+      ctx.fillStyle = isLight ? '#dc2626' : '#ff6961';
+      const labelAngle = -Math.PI / 4;
+      const lx = cx + (rOutPx + 8) * Math.cos(labelAngle);
+      const ly = cy - (rOutPx + 8) * Math.sin(labelAngle);
+      ctx.fillText(`Biên ROC |z|=${rocOuter.toFixed(2)}`, lx, ly);
+    }
+  }
+  ctx.restore();
+
+  // 2. High-Visibility Polar Grid & Re(z) / Im(z) Coordinate Axes
+  ctx.save();
+  ctx.strokeStyle = isLight ? '#cbd5e1' : 'rgba(100, 116, 139, 0.35)';
+  ctx.lineWidth = 1.1;
+  [0.5, 1.5, 2.0].forEach(r => {
+    if (r <= maxR * 1.1) {
+      ctx.beginPath();
+      ctx.arc(cx, cy, r * scale, 0, 2 * Math.PI);
+      ctx.stroke();
+    }
+  });
+
+  // Radial angle rays every 30 deg
+  for (let deg = 0; deg < 180; deg += 30) {
+    if (deg === 0 || deg === 90) continue;
+    const rad = (deg * Math.PI) / 180;
+    const len = maxR * 1.05 * scale;
+    ctx.beginPath();
+    ctx.moveTo(cx - len * Math.cos(rad), cy - len * Math.sin(rad));
+    ctx.lineTo(cx + len * Math.cos(rad), cy + len * Math.sin(rad));
+    ctx.stroke();
+  }
+
+  // Bold Main Real & Imaginary Axes
+  const axisColor = isLight ? '#334155' : '#94a3b8';
+  ctx.strokeStyle = axisColor;
+  ctx.fillStyle = axisColor;
+  ctx.lineWidth = 1.8;
+  ctx.beginPath();
+  ctx.moveTo(8, cy);
+  ctx.lineTo(width - 8, cy);
+  ctx.moveTo(cx, height - 8);
+  ctx.lineTo(cx, 8);
+  ctx.stroke();
+
+  // Arrowheads for +Re(z) and +Im(z)
+  ctx.beginPath();
+  ctx.moveTo(width - 8, cy);
+  ctx.lineTo(width - 16, cy - 4.5);
+  ctx.lineTo(width - 16, cy + 4.5);
+  ctx.closePath();
+  ctx.fill();
+
+  ctx.beginPath();
+  ctx.moveTo(cx, 8);
+  ctx.lineTo(cx - 4.5, 16);
+  ctx.lineTo(cx + 4.5, 16);
+  ctx.closePath();
+  ctx.fill();
+
+  // Tick marks at +-0.5, +-1.0 on Re and Im axes
+  ctx.font = '600 11px JetBrains Mono, monospace';
+  ctx.fillStyle = isLight ? '#0f172a' : '#e2e8f0';
+  [-1, -0.5, 0.5, 1].forEach(val => {
+    const tx = cx + val * scale;
+    const ty = cy - val * scale;
+    ctx.beginPath();
+    ctx.moveTo(tx, cy - 4);
+    ctx.lineTo(tx, cy + 4);
+    ctx.moveTo(cx - 4, ty);
+    ctx.lineTo(cx + 4, ty);
+    ctx.stroke();
+  });
+
+  // Unit Circle |z| = 1 (Bright Sky Blue)
+  ctx.beginPath();
+  ctx.arc(cx, cy, scale, 0, 2 * Math.PI);
+  ctx.strokeStyle = isLight ? '#0284c7' : '#38bdf8';
+  ctx.lineWidth = 2.6;
+  ctx.stroke();
+
+  // Clear Axis & Unit Circle Labels
+  ctx.fillStyle = isLight ? '#0b2559' : '#f8fafc';
+  ctx.font = '700 12px JetBrains Mono, monospace';
+  ctx.fillText('Re(z)', width - 48, cy - 10);
+  ctx.fillText('Im(z)', cx + 10, 20);
+
+  ctx.font = '600 11.5px JetBrains Mono, monospace';
+  ctx.fillText('1', cx + scale + 6, cy + 16);
+  ctx.fillText('-1', cx - scale - 22, cy + 16);
+  ctx.fillText('0.5', cx + 0.5 * scale - 10, cy + 16);
+  ctx.fillText('-0.5', cx - 0.5 * scale - 16, cy + 16);
+  ctx.fillText('j', cx + 8, cy - scale - 6);
+  ctx.fillText('-j', cx + 8, cy + scale + 15);
+
+  ctx.fillStyle = isLight ? '#0284c7' : '#38bdf8';
+  ctx.fillText('Đường tròn đơn vị |z|=1', cx - scale * 0.92, cy - scale - 8);
+  ctx.restore();
+
+  // 3. Geometric Vectors from Poles & Zeros to Probe Point e^{jw_0}
+  const probeZ = Complex.fromPolar(1.0, state.omega0);
+  const probePt = zToScreen(probeZ.re, probeZ.im, width, height, maxR);
+
+  if (state.showVectors) {
+    ctx.save();
+    ctx.lineWidth = 1.5;
+    ctx.setLineDash([4, 4]);
+
+    state.zeros.forEach(z => {
+      const p = zToScreen(z.re, z.im, width, height, maxR);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(probePt.x, probePt.y);
+      ctx.strokeStyle = isLight ? 'rgba(2, 132, 199, 0.8)' : 'rgba(56, 189, 248, 0.85)';
+      ctx.stroke();
+    });
+
+    state.poles.forEach(pole => {
+      const p = zToScreen(pole.re, pole.im, width, height, maxR);
+      ctx.beginPath();
+      ctx.moveTo(p.x, p.y);
+      ctx.lineTo(probePt.x, probePt.y);
+      ctx.strokeStyle = isLight ? 'rgba(220, 38, 38, 0.8)' : 'rgba(255, 69, 58, 0.85)';
+      ctx.stroke();
+    });
+    ctx.restore();
+  }
+
+  // 4. Draw Zeros (Glowing Sky-Cyan Circles 'o') + Coordinate Callout
+  state.zeros.forEach((z, idx) => {
+    const pt = zToScreen(z.re, z.im, width, height, maxR);
+    const isHovered =
+      state.hoveredRoot && state.hoveredRoot.type === 'zero' && state.hoveredRoot.index === idx;
+    ctx.save();
+    if (isHovered) {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 14, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.25)';
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.arc(pt.x, pt.y, isHovered ? 8.2 : 6.8, 0, 2 * Math.PI);
+    ctx.fillStyle = isLight ? '#ffffff' : '#070b14';
+    ctx.fill();
+    ctx.lineWidth = isHovered ? 3.2 : 2.6;
+    ctx.strokeStyle = isLight ? '#0284c7' : '#38bdf8';
+    ctx.stroke();
+
+    if (state.zeros.length <= 6) {
+      const sign = z.im >= 0 ? '+' : '-';
+      const txt =
+        Math.abs(z.im) < 0.01
+          ? `z${idx + 1}(${z.re.toFixed(2)})`
+          : `z${idx + 1}(${z.re.toFixed(2)}${sign}j${Math.abs(z.im).toFixed(2)})`;
+      ctx.font = '600 10.5px JetBrains Mono, monospace';
+      ctx.fillStyle = isLight ? '#0369a1' : '#7dd3fc';
+      ctx.fillText(txt, pt.x + 10, pt.y - 7);
+    }
+    ctx.restore();
+  });
+
+  // 5. Draw Poles (Bright Red Crosses 'x') + Coordinate Callout
+  state.poles.forEach((pole, idx) => {
+    const pt = zToScreen(pole.re, pole.im, width, height, maxR);
+    const isHovered =
+      state.hoveredRoot && state.hoveredRoot.type === 'pole' && state.hoveredRoot.index === idx;
+    const r = isHovered ? 8.2 : 6.8;
+    ctx.save();
+    if (isHovered) {
+      ctx.beginPath();
+      ctx.arc(pt.x, pt.y, 14, 0, 2 * Math.PI);
+      ctx.fillStyle = 'rgba(255, 69, 58, 0.25)';
+      ctx.fill();
+    }
+    ctx.beginPath();
+    ctx.moveTo(pt.x - r, pt.y - r);
+    ctx.lineTo(pt.x + r, pt.y + r);
+    ctx.moveTo(pt.x + r, pt.y - r);
+    ctx.lineTo(pt.x - r, pt.y + r);
+    ctx.lineWidth = isHovered ? 3.5 : 2.8;
+    ctx.strokeStyle = isLight ? '#dc2626' : '#ff453a';
+    ctx.stroke();
+
+    if (state.poles.length <= 6) {
+      const sign = pole.im >= 0 ? '+' : '-';
+      const txt =
+        Math.abs(pole.im) < 0.01
+          ? `p${idx + 1}(${pole.re.toFixed(2)})`
+          : `p${idx + 1}(${pole.re.toFixed(2)}${sign}j${Math.abs(pole.im).toFixed(2)})`;
+      ctx.font = '600 10.5px JetBrains Mono, monospace';
+      ctx.fillStyle = isLight ? '#b91c1c' : '#fca5a5';
+      ctx.fillText(txt, pt.x + 10, pt.y + 14);
+    }
+    ctx.restore();
+  });
+
+  // 6. Draw Frequency Probe Point e^{jw_0} on Unit Circle
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(probePt.x, probePt.y, 7, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fbbf24';
+  ctx.fill();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = isLight ? '#ffffff' : '#070b14';
+  ctx.stroke();
+  ctx.restore();
+}
+
+/**
+ * Helper to draw frequency chart grid & axes
+ */
+function drawFreqGrid(ctx, pad, plotW, plotH, yMin, yMax, fullRange, unitText, isLight) {
+  ctx.save();
+  ctx.strokeStyle = isLight ? '#e2e8f0' : 'rgba(71, 85, 105, 0.5)';
+  ctx.fillStyle = isLight ? '#334155' : '#cbd5e1';
+  ctx.font = '500 11px JetBrains Mono, monospace';
+  ctx.lineWidth = 1;
+
+  const ySteps = 4;
+  ctx.textAlign = 'right';
+  for (let i = 0; i <= ySteps; i++) {
+    const yVal = yMin + (i / ySteps) * (yMax - yMin);
+    const y = pad.top + plotH - (i / ySteps) * plotH;
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + plotW, y);
+    ctx.stroke();
+    ctx.fillText(yVal.toFixed(yMax - yMin > 12 ? 0 : 1), pad.left - 8, y + 4);
+  }
+
+  ctx.textAlign = 'center';
+  const xLabels = fullRange
+    ? ['-π', '-0.5π', '0', '0.5π', 'π']
+    : ['0', '0.25π', '0.5π', '0.75π', 'π'];
+  for (let i = 0; i < xLabels.length; i++) {
+    const x = pad.left + (i / (xLabels.length - 1)) * plotW;
+    ctx.beginPath();
+    ctx.moveTo(x, pad.top);
+    ctx.lineTo(x, pad.top + plotH);
+    ctx.stroke();
+    ctx.fillText(xLabels[i], x, pad.top + plotH + 18);
+  }
+
+  ctx.textAlign = 'right';
+  ctx.fillStyle = isLight ? '#0b2559' : '#94a3b8';
+  ctx.font = '600 11px Inter, sans-serif';
+  ctx.fillText(`Đơn vị: ${unitText}`, pad.left + plotW, pad.top - 7);
+  ctx.restore();
+}
+
+function drawOmegaProbeLine(ctx, pad, plotW, plotH, omega0, fullRange, val, yMin, yMax, isLight) {
+  const wMin = fullRange ? -Math.PI : 0;
+  const wMax = Math.PI;
+  const w = fullRange ? omega0 : Math.abs(omega0);
+  if (w < wMin || w > wMax) return;
+
+  const x = pad.left + ((w - wMin) / (wMax - wMin)) * plotW;
+  const clamped = Math.max(yMin, Math.min(yMax, val));
+  const y = pad.top + plotH - ((clamped - yMin) / (yMax - yMin)) * plotH;
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.setLineDash([4, 4]);
+  ctx.moveTo(x, pad.top);
+  ctx.lineTo(x, pad.top + plotH);
+  ctx.strokeStyle = '#fbbf24';
+  ctx.lineWidth = 1.6;
+  ctx.stroke();
+
+  ctx.beginPath();
+  ctx.setLineDash([]);
+  ctx.arc(x, y, 5.8, 0, 2 * Math.PI);
+  ctx.fillStyle = '#fbbf24';
+  ctx.fill();
+  ctx.strokeStyle = isLight ? '#ffffff' : '#070b14';
+  ctx.lineWidth = 1.8;
+  ctx.stroke();
+  ctx.restore();
+}
+
+/**
+ * 2 & 3. Draw Magnitude (Vibrant Soft Sky-Blue) and Phase / Group Delay Charts
+ */
+function drawFrequencyCharts(state) {
+  const isLight = state.theme === 'light';
+  const freqData = evaluateFrequencyResponse(
+    state.bCoeffs,
+    state.aCoeffs,
+    state.fullFreqRange,
+    512
+  );
+  state.freqData = freqData;
+
+  let maxMag = 0;
+  for (let i = 0; i < freqData.mags.length; i++) {
+    if (freqData.mags[i] > maxMag) maxMag = freqData.mags[i];
+  }
+  const maxDb = 20 * Math.log10(Math.max(maxMag, 1e-6));
+
+  const Hw0 = evaluateHzAtOmega(state.bCoeffs, state.aCoeffs, state.omega0);
+  const magW0 = Hw0.abs();
+  const dbW0 = 20 * Math.log10(Math.max(magW0, 1e-6));
+  const degW0 = (Hw0.arg() * 180) / Math.PI;
+
+  const pad = { left: 56, right: 24, top: 24, bottom: 28 };
+
+  // --- Magnitude Chart (Brighter, Fuller Soft Sky-Blue Spectrum) ---
+  const magCanvas = document.getElementById('magCanvas');
+  if (magCanvas) {
+    const { ctx, width, height } = setupHiDPICanvas(magCanvas);
+    ctx.fillStyle = isLight ? '#ffffff' : '#070b14';
+    ctx.fillRect(0, 0, width, height);
+    const plotW = width - pad.left - pad.right;
+    const plotH = height - pad.top - pad.bottom;
+
+    const yMin = state.magDb ? -60 : 0;
+    const yMax = state.magDb
+      ? Math.max(10, Math.ceil((maxDb + 5) / 10) * 10)
+      : Math.max(1.2, maxMag * 1.15);
+
+    drawFreqGrid(
+      ctx,
+      pad,
+      plotW,
+      plotH,
+      yMin,
+      yMax,
+      state.fullFreqRange,
+      state.magDb ? 'dB' : 'Biên độ tuyến tính',
+      isLight
+    );
+
+    ctx.save();
+    ctx.beginPath();
+    for (let i = 0; i < freqData.mags.length; i++) {
+      const val = state.magDb
+        ? Math.max(-60, 20 * Math.log10(Math.max(freqData.mags[i], 1e-6)))
+        : freqData.mags[i];
+      const x = pad.left + (i / (freqData.mags.length - 1)) * plotW;
+      const y = pad.top + plotH - ((val - yMin) / (yMax - yMin)) * plotH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    // Luminous Soft Sky-Blue Curve (#60a5fa / #38bdf8)
+    ctx.strokeStyle = isLight ? '#0284c7' : '#60a5fa';
+    ctx.lineWidth = 3.2;
+    ctx.stroke();
+
+    ctx.lineTo(pad.left + plotW, pad.top + plotH);
+    ctx.lineTo(pad.left, pad.top + plotH);
+    ctx.closePath();
+    const grad = ctx.createLinearGradient(0, pad.top, 0, pad.top + plotH);
+    if (isLight) {
+      grad.addColorStop(0, 'rgba(56, 189, 248, 0.38)');
+      grad.addColorStop(1, 'rgba(56, 189, 248, 0.04)');
+    } else {
+      grad.addColorStop(0, 'rgba(96, 165, 250, 0.45)');
+      grad.addColorStop(0.65, 'rgba(56, 189, 248, 0.18)');
+      grad.addColorStop(1, 'rgba(56, 189, 248, 0.02)');
+    }
+    ctx.fillStyle = grad;
+    ctx.fill();
+    ctx.restore();
+
+    drawOmegaProbeLine(
+      ctx,
+      pad,
+      plotW,
+      plotH,
+      state.omega0,
+      state.fullFreqRange,
+      state.magDb ? Math.max(-60, dbW0) : magW0,
+      yMin,
+      yMax,
+      isLight
+    );
+  }
+
+  // --- Phase / Group Delay Chart ---
+  const phaseCanvas = document.getElementById('phaseCanvas');
+  if (phaseCanvas) {
+    const { ctx, width, height } = setupHiDPICanvas(phaseCanvas);
+    ctx.fillStyle = isLight ? '#ffffff' : '#070b14';
+    ctx.fillRect(0, 0, width, height);
+    const plotW = width - pad.left - pad.right;
+    const plotH = height - pad.top - pad.bottom;
+
+    const isGd = state.phaseChartMode === 'groupDelay';
+    const arr = isGd ? freqData.groupDelay : freqData.phasesDeg;
+
+    let pMin = -180;
+    let pMax = 180;
+    if (isGd) {
+      let minG = Infinity, maxG = -Infinity;
+      for (let i = 0; i < arr.length; i++) {
+        if (arr[i] < minG) minG = arr[i];
+        if (arr[i] > maxG) maxG = arr[i];
+      }
+      pMin = Math.min(-2, Math.floor(minG - 1));
+      pMax = Math.max(8, Math.ceil(maxG + 1));
+    }
+
+    drawFreqGrid(
+      ctx,
+      pad,
+      plotW,
+      plotH,
+      pMin,
+      pMax,
+      state.fullFreqRange,
+      isGd ? 'Mẫu (Samples)' : 'Độ (°)',
+      isLight
+    );
+
+    ctx.save();
+    ctx.beginPath();
+    for (let i = 0; i < arr.length; i++) {
+      const x = pad.left + (i / (arr.length - 1)) * plotW;
+      const clamped = Math.max(pMin, Math.min(pMax, arr[i]));
+      const y = pad.top + plotH - ((clamped - pMin) / (pMax - pMin)) * plotH;
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = isGd ? '#a855f7' : '#f472b6';
+    ctx.lineWidth = 2.5;
+    ctx.stroke();
+    ctx.restore();
+
+    const wMin = state.fullFreqRange ? -Math.PI : 0;
+    const wProbe = state.fullFreqRange ? state.omega0 : Math.abs(state.omega0);
+    const probeIdx = Math.max(
+      0,
+      Math.min(arr.length - 1, Math.round(((wProbe - wMin) / (Math.PI - wMin)) * (arr.length - 1)))
+    );
+    drawOmegaProbeLine(
+      ctx,
+      pad,
+      plotW,
+      plotH,
+      state.omega0,
+      state.fullFreqRange,
+      arr[probeIdx],
+      pMin,
+      pMax,
+      isLight
+    );
+  }
+
+  return { maxMag, maxDb, magW0, dbW0, degW0 };
+}
+
+/**
+ * 4. Draw Time-Domain Impulse Response h[n] & Step Response s[n]
+ */
+function drawImpulseResponseChart(state) {
+  const canvas = document.getElementById('impulseCanvas');
+  if (!canvas) return;
+  const { ctx, width, height } = setupHiDPICanvas(canvas);
+  const isLight = state.theme === 'light';
+
+  ctx.fillStyle = isLight ? '#ffffff' : '#070b14';
+  ctx.fillRect(0, 0, width, height);
+
+  const { nIndices, x: inSig, y: outSig } = computeTimeDomainResponse(
+    state.bCoeffs,
+    state.aCoeffs,
+    state.poles,
+    state.rocType,
+    state.numSamples,
+    state.timeChartMode
+  );
+
+  const pad = { left: 56, right: 24, top: 24, bottom: 28 };
+  const plotW = width - pad.left - pad.right;
+  const plotH = height - pad.top - pad.bottom;
+
+  let maxAbs = 0.1;
+  for (let i = 0; i < outSig.length; i++) {
+    maxAbs = Math.max(maxAbs, Math.abs(outSig[i]));
+    if (state.timeChartMode === 'signal') {
+      maxAbs = Math.max(maxAbs, Math.abs(inSig[i]));
+    }
+  }
+  maxAbs *= 1.15;
+
+  const zeroY = pad.top + plotH / 2;
+
+  ctx.save();
+  ctx.font = '500 11px JetBrains Mono, monospace';
+  ctx.fillStyle = isLight ? '#334155' : '#cbd5e1';
+  ctx.textAlign = 'right';
+
+  [-1, -0.5, 0, 0.5, 1].forEach(frac => {
+    const y = zeroY - frac * (plotH / 2);
+    ctx.beginPath();
+    ctx.moveTo(pad.left, y);
+    ctx.lineTo(pad.left + plotW, y);
+    ctx.strokeStyle =
+      frac === 0
+        ? isLight ? '#64748b' : 'rgba(148, 163, 184, 0.8)'
+        : isLight ? '#e2e8f0' : 'rgba(51, 65, 85, 0.45)';
+    ctx.lineWidth = frac === 0 ? 1.5 : 1;
+    ctx.stroke();
+
+    const val = frac * maxAbs;
+    const label = Math.abs(val) >= 100 ? val.toExponential(1) : val.toFixed(Math.abs(maxAbs) > 10 ? 1 : 2);
+    ctx.fillText(label, pad.left - 8, y + 4);
+  });
+
+  // Highlight vertical origin line n = 0
+  const n0Idx = nIndices.indexOf(0);
+  if (n0Idx !== -1) {
+    const x0 = pad.left + (n0Idx / (nIndices.length - 1)) * plotW;
+    ctx.beginPath();
+    ctx.setLineDash([4, 4]);
+    ctx.moveTo(x0, pad.top);
+    ctx.lineTo(x0, pad.top + plotH);
+    ctx.strokeStyle = 'rgba(251, 191, 36, 0.55)';
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.textAlign = 'center';
+  const numSamples = nIndices.length;
+  const stepN = Math.max(4, Math.round(numSamples / 8));
+  for (let i = 0; i < numSamples; i += stepN) {
+    const x = pad.left + (i / (numSamples - 1)) * plotW;
+    ctx.fillText(`n=${nIndices[i]}`, x, pad.top + plotH + 18);
+  }
+
+  if (state.timeChartMode === 'signal') {
+    ctx.beginPath();
+    for (let i = 0; i < numSamples; i++) {
+      const x = pad.left + (i / (numSamples - 1)) * plotW;
+      const y = zeroY - (inSig[i] / maxAbs) * (plotH / 2);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = 'rgba(148, 163, 184, 0.6)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+
+    ctx.beginPath();
+    for (let i = 0; i < numSamples; i++) {
+      const x = pad.left + (i / (numSamples - 1)) * plotW;
+      const y = zeroY - (outSig[i] / maxAbs) * (plotH / 2);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.strokeStyle = '#10b981';
+    ctx.lineWidth = 2.4;
+    ctx.stroke();
+  } else {
+    for (let i = 0; i < numSamples; i++) {
+      const x = pad.left + (i / (numSamples - 1)) * plotW;
+      const y = zeroY - (outSig[i] / maxAbs) * (plotH / 2);
+
+      ctx.beginPath();
+      ctx.moveTo(x, zeroY);
+      ctx.lineTo(x, y);
+      ctx.strokeStyle = nIndices[i] < 0 ? '#f43f5e' : '#60a5fa';
+      ctx.lineWidth = 1.9;
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.arc(x, y, numSamples > 80 ? 2.6 : 3.6, 0, 2 * Math.PI);
+      ctx.fillStyle = nIndices[i] < 0 ? '#f43f5e' : '#60a5fa';
+      ctx.fill();
+    }
+  }
+
+  ctx.restore();
+}
+
+/**
+ * js/app.js
+ * Main Application Controller:
+ * - Dual Theme Toggle: Dark Mode (Xanh Tối Gốc - Default) & Light Mode (Sáng Bách Khoa)
+ * - Direct Symbolic H(z) Expression Input & Recalculate-to-Z-Plane workflow
+ * - Auto-fit Z-Plane view range on every recalculation
+ * - Complete Analytical Output (H(z), Poles/Zeros, ROC, Closed-Form h[n], y[n], H(e^{jw}))
+ */
+
+const state = {
+  theme: 'dark', // 'dark' (Xanh Tối Gốc) | 'light' (Sáng Bách Khoa)
+  zeros: [],
+  poles: [],
+  gain: 1.0,
+  omega0: Math.PI / 4,
+  rocType: 'causal',
+  interactMode: 'drag',
+  phaseChartMode: 'phase',
+  timeChartMode: 'impulse',
+  conjugatePair: true,
+  showVectors: true,
+  magDb: false,
+  fullFreqRange: false,
+  numSamples: 64,
+  zViewRange: 1.42,
+  dragging: null,
+  hoveredRoot: null,
+  bCoeffs: [1],
+  aCoeffs: [1],
+  freqData: null,
+  lastFrameTime: performance.now(),
+  fps: 60
+};
+
+const PRESETS = {
+  resonator: {
+    expr: '0.19 * (1 - z^-2) / (1 - 1.2728*z^-1 + 0.81*z^-2)',
+    gain: 0.19,
+    zeros: [new Complex(1, 0), new Complex(-1, 0)],
+    poles: [Complex.fromPolar(0.9, Math.PI / 4), Complex.fromPolar(0.9, -Math.PI / 4)],
+    omega0: Math.PI / 4,
+    rocType: 'causal'
+  },
+  notch: {
+    expr: '0.93 * (1 - z^-1 + z^-2) / (1 - 0.92*z^-1 + 0.8464*z^-2)',
+    gain: 0.93,
+    zeros: [Complex.fromPolar(1.0, Math.PI / 3), Complex.fromPolar(1.0, -Math.PI / 3)],
+    poles: [Complex.fromPolar(0.92, Math.PI / 3), Complex.fromPolar(0.92, -Math.PI / 3)],
+    omega0: Math.PI / 3,
+    rocType: 'causal'
+  },
+  lowpass_iir: {
+    expr: '0.0976 * (1 + 2*z^-1 + z^-2) / (1 - 1.1085*z^-1 + 0.4096*z^-2)',
+    gain: 0.0976,
+    zeros: [new Complex(-1, 0), new Complex(-1, 0)],
+    poles: [Complex.fromPolar(0.64, Math.PI / 6), Complex.fromPolar(0.64, -Math.PI / 6)],
+    omega0: Math.PI / 8,
+    rocType: 'causal'
+  },
+  highpass_iir: {
+    expr: '0.25 * (1 - 2*z^-1 + z^-2) / (1 + 0.9192*z^-1 + 0.4225*z^-2)',
+    gain: 0.25,
+    zeros: [new Complex(1, 0), new Complex(1, 0)],
+    poles: [Complex.fromPolar(0.65, (3 * Math.PI) / 4), Complex.fromPolar(0.65, -(3 * Math.PI) / 4)],
+    omega0: (3 * Math.PI) / 4,
+    rocType: 'causal'
+  },
+  moving_avg: {
+    expr: '0.25 * (1 + z^-1 + z^-2 + z^-3)',
+    gain: 0.25,
+    zeros: [new Complex(0, 1), new Complex(0, -1), new Complex(-1, 0)],
+    poles: [],
+    omega0: Math.PI / 2,
+    rocType: 'causal'
+  },
+  allpass: {
+    expr: '(0.64 - 0.8*z^-1 + z^-2) / (1 - 0.8*z^-1 + 0.64*z^-2)',
+    gain: 0.64,
+    zeros: [
+      Complex.fromPolar(1 / 0.8, Math.PI / 3),
+      Complex.fromPolar(1 / 0.8, -Math.PI / 3)
+    ],
+    poles: [
+      Complex.fromPolar(0.8, Math.PI / 3),
+      Complex.fromPolar(0.8, -Math.PI / 3)
+    ],
+    omega0: Math.PI / 3,
+    rocType: 'causal'
+  },
+  comb: {
+    expr: '0.5 * (1 - z^-4)',
+    gain: 0.5,
+    zeros: [
+      Complex.fromPolar(1, Math.PI / 4),
+      Complex.fromPolar(1, -Math.PI / 4),
+      Complex.fromPolar(1, (3 * Math.PI) / 4),
+      Complex.fromPolar(1, -(3 * Math.PI) / 4)
+    ],
+    poles: [],
+    omega0: Math.PI / 4,
+    rocType: 'causal'
+  },
+  unstable: {
+    expr: '0.5 / (1 - 1.7313*z^-1 + 1.1449*z^-2)',
+    gain: 0.5,
+    zeros: [],
+    poles: [
+      Complex.fromPolar(1.07, Math.PI / 5),
+      Complex.fromPolar(1.07, -Math.PI / 5)
+    ],
+    omega0: Math.PI / 5,
+    rocType: 'causal'
+  }
+};
+
+/**
+ * Toggle between Dark Mode (Xanh Tối Gốc) and Light Mode (Sáng Bách Khoa)
+ */
+window.setAppTheme = function (theme) {
+  state.theme = theme;
+  document.documentElement.setAttribute('data-theme', theme);
+
+  const darkBtn = document.getElementById('themeDarkBtn');
+  const lightBtn = document.getElementById('themeLightBtn');
+  if (darkBtn && lightBtn) {
+    if (theme === 'dark') {
+      darkBtn.className = 'px-3 py-1 rounded-md bg-sky-500 text-white font-bold text-xs shadow transition';
+      lightBtn.className = 'px-3 py-1 rounded-md text-sky-100 hover:text-white font-medium text-xs transition';
+    } else {
+      lightBtn.className = 'px-3 py-1 rounded-md bg-white text-[#0b2559] font-bold text-xs shadow transition';
+      darkBtn.className = 'px-3 py-1 rounded-md text-sky-100 hover:text-white font-medium text-xs transition';
+    }
+  }
+  updateAllFormulasAndTables();
+  requestRedraw();
+};
+
+function renderLatexToElement(elOrId, latexStr, displayMode = false) {
+  const el = typeof elOrId === 'string' ? document.getElementById(elOrId) : elOrId;
+  if (!el) return;
+  if (window.katex) {
+    window.katex.render(latexStr, el, {
+      throwOnError: false,
+      displayMode
+    });
+  } else {
+    el.textContent = latexStr;
+  }
+}
+
+function renderStaticPageMath() {
+  if (window.renderMathInElement) {
+    window.renderMathInElement(document.body, {
+      delimiters: [
+        { left: '$', right: '$', display: true },
+        { left: '
+</body>
+</html>
+, right: '
+</body>
+</html>
+, display: false },
+        { left: '\\(', right: '\\)', display: false },
+        { left: '\\[', right: '\\]', display: true }
+      ],
+      throwOnError: false
+    });
+  }
+}
+
+function classifyFilterType(mags, poles) {
+  if (poles.length === 0) return 'Hệ FIR (Đáp ứng xung hữu hạn)';
+  const n = mags.length;
+  const dc = mags[0];
+  const nyq = mags[n - 1];
+  let maxVal = 0, minVal = Infinity, maxIdx = 0, minIdx = 0;
+  for (let i = 0; i < n; i++) {
+    if (mags[i] > maxVal) { maxVal = mags[i]; maxIdx = i; }
+    if (mags[i] < minVal) { minVal = mags[i]; minIdx = i; }
+  }
+  if (maxVal - minVal < 0.08 * maxVal) return 'All-Pass (Cân bằng pha)';
+  if (minVal < 0.12 * maxVal && minIdx > 0.08 * n && minIdx < 0.92 * n && dc > 0.6 * maxVal && nyq > 0.6 * maxVal) {
+    return 'IIR Chắn dải (Notch Filter)';
+  }
+  if (maxIdx > 0.1 * n && maxIdx < 0.9 * n && dc < 0.6 * maxVal && nyq < 0.6 * maxVal) {
+    return 'IIR Thông dải (Band-pass)';
+  }
+  if (dc > nyq * 1.8) return 'IIR Thông thấp (Low-pass)';
+  if (nyq > dc * 1.8) return 'IIR Thông cao (High-pass)';
+  return 'Hệ IIR Đa tần Tổng quát';
+}
+
+function autoFitZPlaneRange() {
+  let maxCoord = 1.05;
+  state.zeros.forEach(z => {
+    maxCoord = Math.max(maxCoord, Math.abs(z.re), Math.abs(z.im), z.abs());
+  });
+  state.poles.forEach(p => {
+    maxCoord = Math.max(maxCoord, Math.abs(p.re), Math.abs(p.im), p.abs());
+  });
+  state.zViewRange = Math.max(1.42, maxCoord * 1.28);
+}
+
+function triggerZPlaneRecalcFlash() {
+  const card = document.getElementById('zPlaneCard');
+  if (!card) return;
+  card.classList.remove('recalc-flash');
+  void card.offsetWidth;
+  card.classList.add('recalc-flash');
+}
+
+function coeffsToExprString(bCoeffs, aCoeffs) {
+  const polyStr = arr => {
+    const parts = [];
+    for (let i = 0; i < arr.length; i++) {
+      const c = Number(arr[i].toFixed(4));
+      if (Math.abs(c) < 1e-5 && arr.length > 1) continue;
+      const sign = c < 0 ? ' - ' : parts.length > 0 ? ' + ' : '';
+      const absC = Math.abs(c);
+      const numPart = i === 0 || Math.abs(absC - 1) > 1e-4 ? absC : '';
+      const zPart = i === 0 ? '' : i === 1 ? 'z^-1' : `z^-${i}`;
+      const sep = numPart !== '' && zPart !== '' ? '*' : '';
+      parts.push(`${sign}${numPart}${sep}${zPart}`);
+    }
+    return parts.length ? parts.join('').trim() : '0';
+  };
+
+  const numS = polyStr(bCoeffs);
+  const denS = polyStr(aCoeffs);
+  if (aCoeffs.length <= 1 && Math.abs(aCoeffs[0] - 1) < 1e-4) {
+    return numS;
+  }
+  return `(${numS}) / (${denS})`;
+}
+
+function syncCoeffsFromRoots(updateCoeffsBoxes = true, updateFormulaInputBox = false) {
+  const rawB = rootsToPoly(state.zeros);
+  state.bCoeffs = rawB.map(c => c * state.gain);
+  state.aCoeffs = rootsToPoly(state.poles);
+
+  if (updateCoeffsBoxes) {
+    const numEl = document.getElementById('numCoeffsInput');
+    const denEl = document.getElementById('denCoeffsInput');
+    const gainEl = document.getElementById('gainInput');
+
+    if (numEl) numEl.value = state.bCoeffs.map(v => Number(v.toFixed(4))).join(', ');
+    if (denEl) denEl.value = state.aCoeffs.map(v => Number(v.toFixed(4))).join(', ');
+    if (gainEl) gainEl.value = Number(state.gain.toFixed(4));
+  }
+  if (updateFormulaInputBox) {
+    const exprEl = document.getElementById('hzFormulaInput');
+    if (exprEl) exprEl.value = coeffsToExprString(state.bCoeffs, state.aCoeffs);
+  }
+  updateAllFormulasAndTables();
+}
+
+window.syncFormulaBoxFromDraggedZPlane = function () {
+  const exprEl = document.getElementById('hzFormulaInput');
+  if (exprEl) {
+    exprEl.value = coeffsToExprString(state.bCoeffs, state.aCoeffs);
+  }
+  const feedbackEl = document.getElementById('exprFeedbackBadge');
+  if (feedbackEl) {
+    feedbackEl.textContent = '✓ Đã lấy biểu thức H(z) từ vị trí Cực/Zero hiện tại trên đồ thị';
+  }
+};
+
+window.evaluateSymbolicHzInput = function (customExpr) {
+  const exprEl = document.getElementById('hzFormulaInput');
+  const raw = customExpr !== undefined ? customExpr : exprEl.value;
+  if (customExpr !== undefined && exprEl) {
+    exprEl.value = customExpr;
+  }
+
+  const feedbackEl = document.getElementById('exprFeedbackBadge');
+  try {
+    const { bCoeffs, aCoeffs } = parseTransferFunctionString(raw);
+    const firstNonZeroB = bCoeffs.find(v => Math.abs(v) > 1e-10) ?? 1;
+    state.gain = firstNonZeroB;
+    state.zeros = findPolynomialRoots(bCoeffs);
+    state.poles = findPolynomialRoots(aCoeffs);
+    state.bCoeffs = bCoeffs;
+    state.aCoeffs = aCoeffs;
+
+    autoFitZPlaneRange();
+    triggerZPlaneRecalcFlash();
+
+    document.getElementById('numCoeffsInput').value = bCoeffs.map(v => Number(v.toFixed(4))).join(', ');
+    document.getElementById('denCoeffsInput').value = aCoeffs.map(v => Number(v.toFixed(4))).join(', ');
+    document.getElementById('gainInput').value = Number(state.gain.toFixed(4));
+
+    if (feedbackEl) {
+      feedbackEl.textContent = `✓ Đã tính lại & xuất Mặt phẳng phức mặc định: ${state.zeros.length} Zero, ${state.poles.length} Cực`;
+    }
+    updateAllFormulasAndTables();
+    requestRedraw();
+  } catch (err) {
+    if (feedbackEl) {
+      feedbackEl.textContent = `✕ Lỗi cú pháp: ${err.message}. Ví dụ: (1 - z^-2) / (1 - 1.2*z^-1 + 0.8*z^-2)`;
+    }
+  }
+};
+
+window.applyCoefficientsFromInput = function () {
+  const numStr = document.getElementById('numCoeffsInput').value.trim();
+  const denStr = document.getElementById('denCoeffsInput').value.trim();
+
+  const parseArr = str =>
+    str
+      .split(/[\s,]+/)
+      .map(s => parseFloat(s))
+      .filter(v => !Number.isNaN(v));
+
+  let b = parseArr(numStr);
+  let a = parseArr(denStr);
+  if (b.length === 0) b = [1];
+  if (a.length === 0) a = [1];
+
+  const a0 = Math.abs(a[0]) < 1e-12 ? 1 : a[0];
+  b = b.map(v => v / a0);
+  a = a.map(v => v / a0);
+
+  const firstNonZeroB = b.find(v => Math.abs(v) > 1e-12) ?? 1;
+  state.gain = firstNonZeroB;
+  document.getElementById('gainInput').value = Number(state.gain.toFixed(4));
+
+  state.zeros = findPolynomialRoots(b);
+  state.poles = findPolynomialRoots(a);
+  state.bCoeffs = b;
+  state.aCoeffs = a;
+
+  autoFitZPlaneRange();
+  triggerZPlaneRecalcFlash();
+
+  const exprEl = document.getElementById('hzFormulaInput');
+  if (exprEl) exprEl.value = coeffsToExprString(b, a);
+
+  const feedbackEl = document.getElementById('exprFeedbackBadge');
+  if (feedbackEl) {
+    feedbackEl.textContent = `✓ Đã tính lại từ hệ số & xuất Mặt phẳng phức: ${state.zeros.length} Zero, ${state.poles.length} Cực`;
+  }
+
+  updateAllFormulasAndTables();
+  requestRedraw();
+};
+
+function updateAllFormulasAndTables() {
+  const rocInfo = analyzeRocAndStability(state.poles, state.rocType);
+  const { rMax, rocLatex, isStable, poleOnUnitCircle } = rocInfo;
+
+  // 1. Stability Badge
+  const badge = document.getElementById('stabilityBadge');
+  if (poleOnUnitCircle) {
+    badge.className = 'text-xs font-bold px-3.5 py-1.5 rounded-full bg-amber-500/20 text-amber-400 border border-amber-500/40';
+    badge.textContent = '◐ Biên giới ổn định (Cực nằm trên |z| = 1)';
+  } else if (isStable) {
+    badge.className = 'text-xs font-bold px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40';
+    badge.textContent = '● Hệ thống Ổn định BIBO (ROC chứa |z| = 1)';
+  } else {
+    badge.className = 'text-xs font-bold px-3.5 py-1.5 rounded-full bg-rose-500/20 text-rose-400 border border-rose-500/40';
+    badge.textContent = '▲ Hệ thống Không ổn định (ROC không chứa |z| = 1)';
+  }
+
+  // 2. Top Metrics Cards
+  renderLatexToElement('rocSummaryLatex', rocLatex, false);
+  renderLatexToElement('maxPoleRadiusLatex', `r_{\\max} = ${rMax.toFixed(3)}`, false);
+
+  // 3. Large Display-Mode H(z) Rational Polynomial
+  const numPolyZ = buildPolynomialLatex(state.bCoeffs, 'z');
+  const denPolyZ = buildPolynomialLatex(state.aCoeffs, 'z');
+  const hzRationalLatex =
+    state.aCoeffs.length <= 1 && Math.abs(state.aCoeffs[0] - 1) < 1e-4
+      ? `H(z) = ${numPolyZ}`
+      : `H(z) = \\frac{B(z)}{A(z)} = \\frac{${numPolyZ}}{${denPolyZ}}`;
+  renderLatexToElement('latexHzRational', hzRationalLatex, true);
+
+  // 4. Large Display-Mode H(z) Factored Pole-Zero Form
+  const hzFactoredLatex = buildFactoredLatex(state.zeros, state.poles, state.gain);
+  renderLatexToElement('latexHzFactored', hzFactoredLatex, true);
+
+  // 5. Large Display-Mode Frequency Response H(e^{jw})
+  const numPolyW = buildPolynomialLatex(state.bCoeffs, 'w');
+  const denPolyW = buildPolynomialLatex(state.aCoeffs, 'w');
+  const hejwLatex =
+    state.aCoeffs.length <= 1 && Math.abs(state.aCoeffs[0] - 1) < 1e-4
+      ? `H\\left(e^{j\\omega}\\right) = ${numPolyW}`
+      : `H\\left(e^{j\\omega}\\right) = \\frac{${numPolyW}}{${denPolyW}}`;
+  renderLatexToElement('latexHejw', hejwLatex, true);
+
+  // 6. Large Display-Mode Analytical Impulse Response h[n]
+  const hnLatex = buildAnalyticalHnLatex(state.bCoeffs, state.aCoeffs, state.poles, state.rocType);
+  renderLatexToElement('latexAnalyticalHn', hnLatex, true);
+
+  // 7. Large Display-Mode Difference Equation y[n]
+  const diffEqLatex = buildDifferenceEquationLatex(state.bCoeffs, state.aCoeffs);
+  renderLatexToElement('latexDiffEq', diffEqLatex, true);
+
+  // 8. ROC & Stability Conclusion Statement
+  const stabilityImplication = isStable
+    ? '\\implies \\text{Chứa } |z|=1 \\; (\\text{Ổn định BIBO})'
+    : '\\implies \\text{Không chứa } |z|=1 \\; (\\text{Không ổn định})';
+  renderLatexToElement(
+    'latexRocStatement',
+    `\\text{ROC: } ${rocLatex} \\quad ${stabilityImplication}`,
+    false
+  );
+
+  // 9. Clean Spacious Pole & Zero Coordinate Tables
+  renderRootListTables();
+}
+
+window.copyLatexReport = function () {
+  const numPolyZ = buildPolynomialLatex(state.bCoeffs, 'z');
+  const denPolyZ = buildPolynomialLatex(state.aCoeffs, 'z');
+  const rocInfo = analyzeRocAndStability(state.poles, state.rocType);
+  const hnLatex = buildAnalyticalHnLatex(state.bCoeffs, state.aCoeffs, state.poles, state.rocType);
+  const diffEqLatex = buildDifferenceEquationLatex(state.bCoeffs, state.aCoeffs);
+
+  const report = [
+    '% === KẾT QUẢ PHÂN TÍCH HỆ THỐNG LTI (ĐẠI HỌC BÁCH KHOA - HCMUT) ===',
+    `$H(z) = \\frac{${numPolyZ}}{${denPolyZ}}, \\quad \\text{ROC: } ${rocInfo.rocLatex}$`,
+    `$${buildFactoredLatex(state.zeros, state.poles, state.gain)}$`,
+    `$${hnLatex}$`,
+    `$${diffEqLatex}$`
+  ].join('\n\n');
+
+  navigator.clipboard.writeText(report).then(() => {
+    const btn = document.getElementById('copyLatexBtn');
+    if (btn) {
+      const old = btn.textContent;
+      btn.textContent = '✓ Đã Copy LaTeX!';
+      setTimeout(() => { btn.textContent = old; }, 2000);
+    }
+  });
+};
+
+function renderRootListTables() {
+  const renderTable = (arr, type, containerId, accentText) => {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    if (arr.length === 0) {
+      container.innerHTML = `<div class="theme-muted italic py-2 text-xs text-center">Không có nghiệm hữu hạn</div>`;
+      return;
+    }
+
+    container.innerHTML = '';
+    arr.forEach((c, idx) => {
+      const row = document.createElement('div');
+      row.className = 'grid grid-cols-12 items-center gap-2 sci-input px-3 py-2 rounded-lg text-xs';
+
+      const colSym = document.createElement('div');
+      colSym.className = `col-span-2 font-bold ${accentText}`;
+      const sym = type === 'zero' ? `z_{${idx + 1}}` : `p_{${idx + 1}}`;
+      renderLatexToElement(colSym, sym, false);
+
+      const colRect = document.createElement('div');
+      colRect.className = 'col-span-5 mono font-medium';
+      const sign = c.im >= 0 ? '+' : '-';
+      colRect.textContent = `${c.re.toFixed(3)} ${sign} j${Math.abs(c.im).toFixed(3)}`;
+
+      const colPolar = document.createElement('div');
+      colPolar.className = 'col-span-4 mono theme-muted text-[11px]';
+      const r = c.abs().toFixed(3);
+      const deg = ((c.arg() * 180) / Math.PI).toFixed(1);
+      colPolar.textContent = `r=${r}, ∠${deg}°`;
+
+      const colDel = document.createElement('div');
+      colDel.className = 'col-span-1 text-right';
+      const delBtn = document.createElement('button');
+      delBtn.className = 'theme-muted hover:text-rose-500 font-bold px-1 transition';
+      delBtn.textContent = '✕';
+      delBtn.title = 'Xóa nghiệm này';
+      delBtn.onclick = () => removeRootAt(type, idx);
+      colDel.appendChild(delBtn);
+
+      row.appendChild(colSym);
+      row.appendChild(colRect);
+      row.appendChild(colPolar);
+      row.appendChild(colDel);
+      container.appendChild(row);
+    });
+  };
+
+  renderTable(state.zeros, 'zero', 'zerosListContainer', 'text-sky-400');
+  renderTable(state.poles, 'pole', 'polesListContainer', 'text-rose-400');
+}
+
+window.removeRootAt = function (type, idx) {
+  const list = type === 'zero' ? state.zeros : state.poles;
+  const target = list[idx];
+  if (!target) return;
+  list.splice(idx, 1);
+
+  if (state.conjugatePair && Math.abs(target.im) > 0.02) {
+    const conjIdx = list.findIndex(
+      r => Math.abs(r.re - target.re) < 0.05 && Math.abs(r.im + target.im) < 0.05
+    );
+    if (conjIdx !== -1) list.splice(conjIdx, 1);
+  }
+  syncCoeffsFromRoots(true, false);
+  requestRedraw();
+};
+
+window.addManualRoot = function (type) {
+  const list = type === 'zero' ? state.zeros : state.poles;
+  const r = type === 'zero' ? 0.95 : 0.75;
+  const angle = 0.35 * Math.PI;
+  list.push(Complex.fromPolar(r, angle));
+  if (state.conjugatePair) {
+    list.push(Complex.fromPolar(r, -angle));
+  }
+  syncCoeffsFromRoots(true, false);
+  requestRedraw();
+};
+
+/**
+ * 60 FPS Render Loop
+ */
+let redrawQueued = false;
+function requestRedraw() {
+  if (redrawQueued) return;
+  redrawQueued = true;
+  requestAnimationFrame(timestamp => {
+    redrawQueued = false;
+    const dt = timestamp - state.lastFrameTime;
+    if (dt > 0) {
+      const instFps = Math.min(120, Math.round(1000 / dt));
+      state.fps = Math.round(state.fps * 0.8 + instFps * 0.2);
+      const fpsEl = document.getElementById('fpsCounter');
+      if (fpsEl) fpsEl.textContent = `${Math.max(60, state.fps)} FPS`;
+    }
+    state.lastFrameTime = timestamp;
+
+    drawZPlaneCanvas(state);
+    const metrics = drawFrequencyCharts(state);
+    drawImpulseResponseChart(state);
+
+    if (metrics) {
+      renderLatexToElement(
+        'peakGainLatex',
+        `${metrics.maxMag.toFixed(2)} \\; (${metrics.maxDb.toFixed(1)}\\text{ dB})`,
+        false
+      );
+      renderLatexToElement(
+        'vectorGainLatex',
+        `\\left|H\\left(e^{j\\omega_0}\\right)\\right| = ${metrics.magW0.toFixed(3)} \\; (${metrics.dbW0.toFixed(1)}\\text{ dB}), \\quad \\angle H\\left(e^{j\\omega_0}\\right) = ${metrics.degW0.toFixed(1)}^\\circ`,
+        false
+      );
+      const filterEl = document.getElementById('filterTypeText');
+      if (filterEl && state.freqData) {
+        filterEl.textContent = classifyFilterType(state.freqData.mags, state.poles);
+      }
+    }
+  });
+}
+
+function findNearestRoot(mouseX, mouseY, width, height, thresholdPx = 15) {
+  let best = null;
+  let bestDist = thresholdPx;
+  const maxR = state.zViewRange || 1.42;
+
+  state.poles.forEach((p, idx) => {
+    const pt = zToScreen(p.re, p.im, width, height, maxR);
+    const d = Math.hypot(mouseX - pt.x, mouseY - pt.y);
+    if (d < bestDist) {
+      bestDist = d;
+      best = { type: 'pole', index: idx };
+    }
+  });
+
+  state.zeros.forEach((z, idx) => {
+    const pt = zToScreen(z.re, z.im, width, height, maxR);
+    const d = Math.hypot(mouseX - pt.x, mouseY - pt.y);
+    if (d < bestDist) {
+      bestDist = d;
+      best = { type: 'zero', index: idx };
+    }
+  });
+
+  return best;
+}
+
+function initInteractions() {
+  const zCanvas = document.getElementById('zPlaneCanvas');
+  if (!zCanvas) return;
+
+  const getMousePos = e => {
+    const rect = zCanvas.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    return {
+      x: clientX - rect.left,
+      y: clientY - rect.top,
+      width: rect.width,
+      height: rect.height
+    };
+  };
+
+  zCanvas.addEventListener('mousedown', e => {
+    if (e.button === 2) return;
+    const pos = getMousePos(e);
+    const maxR = state.zViewRange || 1.42;
+    const z = screenToZ(pos.x, pos.y, pos.width, pos.height, maxR);
+
+    if (state.interactMode === 'addPole' || state.interactMode === 'addZero') {
+      const list = state.interactMode === 'addPole' ? state.poles : state.zeros;
+      list.push(z);
+      if (state.conjugatePair && Math.abs(z.im) > 0.03) {
+        list.push(new Complex(z.re, -z.im));
+      }
+      setInteractMode('drag');
+      syncCoeffsFromRoots(true, false);
+      requestRedraw();
+      return;
+    }
+
+    const hit = findNearestRoot(pos.x, pos.y, pos.width, pos.height);
+    if (hit) {
+      const list = hit.type === 'pole' ? state.poles : state.zeros;
+      const target = list[hit.index];
+      let conjIndex = -1;
+      if (state.conjugatePair && Math.abs(target.im) > 0.015) {
+        conjIndex = list.findIndex(
+          (r, i) =>
+            i !== hit.index &&
+            Math.abs(r.re - target.re) < 0.05 &&
+            Math.abs(r.im + target.im) < 0.05
+        );
+      }
+      state.dragging = { type: hit.type, index: hit.index, conjIndex };
+    } else if (Math.abs(z.abs() - 1.0) < 0.14) {
+      state.dragging = { type: 'omegaProbe' };
+      onOmegaSliderChange(z.arg());
+    }
+  });
+
+  window.addEventListener('mousemove', e => {
+    const rect = zCanvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const maxR = state.zViewRange || 1.42;
+
+    if (x >= 0 && x <= rect.width && y >= 0 && y <= rect.height) {
+      const z = screenToZ(x, y, rect.width, rect.height, maxR);
+      const sign = z.im >= 0 ? '+' : '-';
+      const deg = ((z.arg() * 180) / Math.PI).toFixed(1);
+      renderLatexToElement(
+        'zCursorLatex',
+        `z = ${z.re.toFixed(2)} ${sign} j${Math.abs(z.im).toFixed(2)}, \\; |z| = ${z.abs().toFixed(2)}, \\; \\angle ${deg}^\\circ`,
+        false
+      );
+
+      if (!state.dragging) {
+        const hit = findNearestRoot(x, y, rect.width, rect.height);
+        if (
+          (hit && !state.hoveredRoot) ||
+          (!hit && state.hoveredRoot) ||
+          (hit && state.hoveredRoot && (hit.type !== state.hoveredRoot.type || hit.index !== state.hoveredRoot.index))
+        ) {
+          state.hoveredRoot = hit;
+          requestRedraw();
+        }
+      }
+    }
+
+    if (!state.dragging) return;
+    const z = screenToZ(x, y, rect.width, rect.height, maxR);
+
+    if (state.dragging.type === 'omegaProbe') {
+      onOmegaSliderChange(z.arg());
+      return;
+    }
+
+    const bound = maxR * 0.95;
+    const clampedRe = Math.max(-bound, Math.min(bound, z.re));
+    let clampedIm = Math.max(-bound, Math.min(bound, z.im));
+    if (Math.abs(clampedIm) < 0.025) clampedIm = 0;
+
+    const list = state.dragging.type === 'pole' ? state.poles : state.zeros;
+    const idx = state.dragging.index;
+    if (list[idx]) {
+      list[idx] = new Complex(clampedRe, clampedIm);
+      if (state.dragging.conjIndex !== -1 && list[state.dragging.conjIndex]) {
+        list[state.dragging.conjIndex] = new Complex(clampedRe, -clampedIm);
+      }
+      syncCoeffsFromRoots(true, false);
+      requestRedraw();
+    }
+  });
+
+  window.addEventListener('mouseup', () => {
+    state.dragging = null;
+  });
+
+  zCanvas.addEventListener('dblclick', e => {
+    const pos = getMousePos(e);
+    const maxR = state.zViewRange || 1.42;
+    const z = screenToZ(pos.x, pos.y, pos.width, pos.height, maxR);
+    const list = e.shiftKey ? state.zeros : state.poles;
+    list.push(z);
+    if (state.conjugatePair && Math.abs(z.im) > 0.03) {
+      list.push(new Complex(z.re, -z.im));
+    }
+    syncCoeffsFromRoots(true, false);
+    requestRedraw();
+  });
+
+  zCanvas.addEventListener('contextmenu', e => {
+    e.preventDefault();
+    const pos = getMousePos(e);
+    const hit = findNearestRoot(pos.x, pos.y, pos.width, pos.height, 18);
+    if (hit) removeRootAt(hit.type, hit.index);
+  });
+
+  ['magCanvas', 'phaseCanvas'].forEach(id => {
+    const c = document.getElementById(id);
+    if (!c) return;
+    let scrubbing = false;
+    const updateW = e => {
+      const rect = c.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const padLeft = 56, padRight = 24;
+      const plotW = rect.width - padLeft - padRight;
+      const frac = Math.max(0, Math.min(1, (x - padLeft) / plotW));
+      const wMin = state.fullFreqRange ? -Math.PI : 0;
+      const w = wMin + frac * (Math.PI - wMin);
+      onOmegaSliderChange(w);
+    };
+    c.addEventListener('mousedown', e => {
+      scrubbing = true;
+      updateW(e);
+    });
+    window.addEventListener('mousemove', e => {
+      if (scrubbing) updateW(e);
+    });
+    window.addEventListener('mouseup', () => {
+      scrubbing = false;
+    });
+  });
+
+  window.addEventListener('resize', () => requestRedraw());
+}
+
+window.setInteractMode = function (mode) {
+  state.interactMode = mode;
+  const btnMap = {
+    drag: 'modeDragBtn',
+    addPole: 'modeAddPoleBtn',
+    addZero: 'modeAddZeroBtn'
+  };
+  Object.entries(btnMap).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    if (k === mode) {
+      el.className = 'px-3 py-1 rounded-md bg-[#0072bc] text-white font-semibold shadow-sm transition';
+    } else {
+      const color = k === 'addPole' ? 'text-rose-500' : k === 'addZero' ? 'text-sky-400' : 'theme-muted';
+      el.className = `px-3 py-1 rounded-md sci-input ${color} hover:opacity-80 font-medium transition`;
+    }
+  });
+};
+
+window.onConjugateToggle = function (checked) {
+  state.conjugatePair = checked;
+};
+
+window.onShowVectorsToggle = function (checked) {
+  state.showVectors = checked;
+  requestRedraw();
+};
+
+window.onMagDbToggle = function (checked) {
+  state.magDb = checked;
+  requestRedraw();
+};
+
+window.onFullFreqToggle = function (checked) {
+  state.fullFreqRange = checked;
+  requestRedraw();
+};
+
+window.onNumSamplesChange = function (val) {
+  state.numSamples = parseInt(val, 10) || 64;
+  requestRedraw();
+};
+
+window.onOmegaSliderChange = function (val) {
+  state.omega0 = parseFloat(val);
+  const slider = document.getElementById('omegaSlider');
+  if (slider) slider.value = state.omega0;
+  const piMult = (state.omega0 / Math.PI).toFixed(2);
+  const deg = ((state.omega0 * 180) / Math.PI).toFixed(1);
+  renderLatexToElement(
+    'omegaValueLatex',
+    `\\omega_0 = ${piMult}\\pi \\text{ rad/mẫu } (${deg}^\\circ)`,
+    false
+  );
+  requestRedraw();
+};
+
+window.onRocTypeChange = function (val) {
+  state.rocType = val;
+  updateAllFormulasAndTables();
+  requestRedraw();
+};
+
+window.onGainChange = function (val) {
+  const g = parseFloat(val);
+  if (!Number.isNaN(g) && Math.abs(g) > 1e-6) {
+    state.gain = g;
+    syncCoeffsFromRoots(true, false);
+    requestRedraw();
+  }
+};
+
+window.normalizePeakGain = function () {
+  const freq = evaluateFrequencyResponse(
+    rootsToPoly(state.zeros),
+    rootsToPoly(state.poles),
+    false,
+    512
+  );
+  let maxM = 0;
+  for (let i = 0; i < freq.mags.length; i++) {
+    if (freq.mags[i] > maxM) maxM = freq.mags[i];
+  }
+  if (maxM > 1e-6) {
+    state.gain = Number((1 / maxM).toFixed(4));
+    syncCoeffsFromRoots(true, false);
+    requestRedraw();
+  }
+};
+
+window.clearAllPolesZeros = function () {
+  state.zeros = [];
+  state.poles = [];
+  state.gain = 1.0;
+  state.zViewRange = 1.42;
+  syncCoeffsFromRoots(true, false);
+  requestRedraw();
+};
+
+window.setPhaseChartMode = function (mode) {
+  state.phaseChartMode = mode;
+  document.getElementById('phaseModeBtn').className =
+    mode === 'phase'
+      ? 'px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition'
+      : 'px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition';
+  document.getElementById('groupDelayModeBtn').className =
+    mode === 'groupDelay'
+      ? 'px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition'
+      : 'px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition';
+  requestRedraw();
+};
+
+window.setTimeChartMode = function (mode) {
+  state.timeChartMode = mode;
+  const map = {
+    impulse: 'timeImpulseBtn',
+    step: 'timeStepBtn',
+    signal: 'timeSignalBtn'
+  };
+  Object.entries(map).forEach(([k, id]) => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.className =
+      k === mode
+        ? 'px-3 py-1.5 rounded-md bg-[#0072bc] text-white font-semibold transition'
+        : 'px-3 py-1.5 rounded-md theme-muted hover:opacity-80 transition';
+  });
+  requestRedraw();
+};
+
+window.applyPreset = function (key) {
+  if (!PRESETS[key]) return;
+  const p = PRESETS[key];
+  state.zeros = p.zeros.map(z => new Complex(z.re, z.im));
+  state.poles = p.poles.map(pole => new Complex(pole.re, pole.im));
+  state.gain = p.gain;
+  state.rocType = p.rocType || 'causal';
+  const rocSel = document.getElementById('rocTypeSelect');
+  if (rocSel) rocSel.value = state.rocType;
+  autoFitZPlaneRange();
+  triggerZPlaneRecalcFlash();
+  onOmegaSliderChange(p.omega0);
+  syncCoeffsFromRoots(true, true);
+  if (p.expr) {
+    const exprEl = document.getElementById('hzFormulaInput');
+    if (exprEl) exprEl.value = p.expr;
+  }
+  requestRedraw();
+};
+
+window.switchTab = function (tab) {
+  const tabs = {
+    simulator: ['tabSimulator', 'tabBtnSimulator'],
+    guide: ['tabGuide', 'tabBtnGuide'],
+    report: ['tabReport', 'tabBtnReport']
+  };
+  Object.entries(tabs).forEach(([k, [secId, btnId]]) => {
+    const sec = document.getElementById(secId);
+    const btn = document.getElementById(btnId);
+    if (!sec || !btn) return;
+    if (k === tab) {
+      sec.classList.remove('hidden');
+      btn.className = 'px-4 py-2.5 text-xs md:text-sm font-bold text-sky-400 border-b-2 border-sky-400 transition';
+    } else {
+      sec.classList.add('hidden');
+      btn.className = 'px-4 py-2.5 text-xs md:text-sm font-semibold theme-muted hover:opacity-90 transition';
+    }
+  });
+  if (tab === 'simulator') {
+    setTimeout(() => requestRedraw(), 20);
+  }
+};
+
+window.loadLabAndSwitch = function (presetKey) {
+  const sel = document.getElementById('presetSelect');
+  if (sel) sel.value = presetKey;
+  applyPreset(presetKey);
+  switchTab('simulator');
+};
+
+window.addEventListener('DOMContentLoaded', () => {
+  renderStaticPageMath();
+  initInteractions();
+  setAppTheme('dark');
+  applyPreset('resonator');
+});
+
+</script>
+</body>
+</html>

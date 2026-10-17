@@ -1,0 +1,210 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* ==================== THEME 1: DARK MODE (XANH TỐI GỐC - DEFAULT) ==================== */
+:root,
+html[data-theme="dark"] {
+  --bg-page: #070b14;
+  --bg-card: #0f172a;
+  --bg-subcard: #090e1a;
+  --bg-input: #060911;
+  --border-card: #1e293b;
+  --border-subcard: #1e293b;
+  --text-main: #f1f5f9;
+  --text-heading: #ffffff;
+  --text-muted: #94a3b8;
+  --katex-color: #f8fafc;
+  --nav-bg: #0b1120;
+  --nav-border: #1e293b;
+  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* ==================== THEME 2: LIGHT MODE (SÁNG BÁCH KHOA HCMUT) ==================== */
+html[data-theme="light"] {
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-subcard: #f8fafc;
+  --bg-input: #ffffff;
+  --border-card: #cbd5e1;
+  --border-subcard: #e2e8f0;
+  --text-main: #0f172a;
+  --text-heading: #0b2559;
+  --text-muted: #475569;
+  --katex-color: #0b2559;
+  --nav-bg: #ffffff;
+  --nav-border: #cbd5e1;
+  --card-shadow: 0 4px 20px -4px rgba(11, 37, 89, 0.08);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  margin: 0;
+  line-height: 1.6;
+  overflow-x: hidden;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+}
+
+canvas {
+  touch-action: none;
+  user-select: none;
+  display: block;
+}
+
+/* Top Header & Hero Banner */
+.bk-top-bar {
+  background: linear-gradient(90deg, #091e4a 0%, #0f3378 100%);
+  color: #ffffff;
+}
+
+.bk-subnav {
+  background-color: var(--nav-bg);
+  border-bottom: 1px solid var(--nav-border);
+  transition: background-color 0.2s ease;
+}
+
+.bk-hero-banner {
+  background: linear-gradient(135deg, #091d47 0%, #0d3278 55%, #026aa7 100%);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(56, 189, 248, 0.25);
+}
+
+.bk-hero-banner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(56, 189, 248, 0.16) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+/* Adaptive Cards & Subcards */
+.sci-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 15px;
+  box-shadow: var(--card-shadow);
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sci-subcard {
+  background-color: var(--bg-subcard);
+  border: 1px solid var(--border-subcard);
+  border-radius: 11px;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
+}
+
+.sci-input {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-card);
+  color: var(--text-main);
+}
+
+.theme-heading {
+  color: var(--text-heading);
+}
+
+.theme-muted {
+  color: var(--text-muted);
+}
+
+/* Flash animation when Z-Plane recalculates */
+@keyframes recalcPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.65);
+    border-color: #38bdf8;
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(56, 189, 248, 0);
+    border-color: #38bdf8;
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0);
+  }
+}
+
+.recalc-flash {
+  animation: recalcPulse 0.75s ease-out;
+}
+
+/* Spacious, Crystal-Clear KaTeX Typography */
+.katex {
+  font-size: 1.12em !important;
+  color: var(--katex-color) !important;
+  line-height: 1.5 !important;
+}
+
+.bk-hero-banner .katex,
+.bk-top-bar .katex,
+.dark-katex .katex {
+  color: #ffffff !important;
+}
+
+.katex-display {
+  margin: 0.55em 0 !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.35rem 0.25rem;
+}
+
+.math-display-xl .katex {
+  font-size: 1.35em !important;
+}
+
+.math-display-lg .katex {
+  font-size: 1.22em !important;
+}
+
+.math-display-md .katex {
+  font-size: 1.14em !important;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-subcard);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 3px;
+}
+
+/* Range Slider Styling */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 7px;
+  background: #334155;
+  border-radius: 999px;
+  outline: none;
+}
+
+html[data-theme="light"] input[type="range"] {
+  background: #cbd5e1;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #fbbf24;
+  cursor: pointer;
+  border: 2px solid #0f172a;
+  box-shadow: 0 0 10px rgba(251, 191, 36, 0.65);
+}

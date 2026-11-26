@@ -1,56 +1,85 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
+/* ==================== PRECISION STUDIO DESIGN SYSTEM ==================== */
+/* Offline-first clean system + mono typography, Obsidian Dark & Crisp Light */
 
-/* ==================== THEME 1: DARK MODE (XANH TỐI GỐC - DEFAULT) ==================== */
 :root,
 html[data-theme="dark"] {
-  --bg-page: #070b14;
-  --bg-card: #0f172a;
-  --bg-subcard: #090e1a;
-  --bg-input: #060911;
-  --border-card: #1e293b;
-  --border-subcard: #1e293b;
-  --text-main: #f1f5f9;
-  --text-heading: #ffffff;
-  --text-muted: #94a3b8;
-  --katex-color: #f8fafc;
-  --nav-bg: #0b1120;
-  --nav-border: #1e293b;
-  --card-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
+  --bg-page: #09090b;
+  --bg-card: #111217;
+  --bg-subcard: #161820;
+  --bg-input: #0b0c10;
+  --bg-legend: #0d0f14;
+  --bg-elevated: #1c1f29;
+  --border-card: rgba(255, 255, 255, 0.08);
+  --border-subcard: rgba(255, 255, 255, 0.06);
+  --border-canvas: rgba(255, 255, 255, 0.10);
+  --text-main: #e4e4e7;
+  --text-heading: #fafafa;
+  --text-muted: #a1a1aa;
+  --accent-primary: #0ea5e9;
+  --accent-primary-hover: #38bdf8;
+  --accent-sky: #38bdf8;
+  --accent-rose: #fb7185;
+  --accent-emerald: #34d399;
+  --accent-amber: #fbbf24;
+  --accent-red: #f87171;
+  --katex-color: #f4f4f5;
+  --nav-bg: rgba(9, 9, 11, 0.82);
+  --nav-border: rgba(255, 255, 255, 0.08);
+  --card-shadow: 0 1px 0 0 rgba(255, 255, 255, 0.04) inset, 0 8px 24px -12px rgba(0, 0, 0, 0.75);
+  --focus-ring: #38bdf8;
 }
 
-/* ==================== THEME 2: LIGHT MODE (SÁNG BÁCH KHOA HCMUT) ==================== */
 html[data-theme="light"] {
-  --bg-page: #f1f5f9;
+  --bg-page: #f8fafc;
   --bg-card: #ffffff;
   --bg-subcard: #f8fafc;
   --bg-input: #ffffff;
-  --border-card: #cbd5e1;
+  --bg-legend: #f8fafc;
+  --bg-elevated: #f1f5f9;
+  --border-card: #e2e8f0;
   --border-subcard: #e2e8f0;
-  --text-main: #0f172a;
-  --text-heading: #0b2559;
+  --border-canvas: #cbd5e1;
+  --text-main: #1e293b;
+  --text-heading: #0f172a;
   --text-muted: #475569;
-  --katex-color: #0b2559;
-  --nav-bg: #ffffff;
-  --nav-border: #cbd5e1;
-  --card-shadow: 0 4px 20px -4px rgba(11, 37, 89, 0.08);
+  --accent-primary: #0284c7;
+  --accent-primary-hover: #0369a1;
+  --accent-sky: #0284c7;
+  --accent-rose: #e11d48;
+  --accent-emerald: #059669;
+  --accent-amber: #b45309;
+  --accent-red: #dc2626;
+  --katex-color: #0f172a;
+  --nav-bg: rgba(255, 255, 255, 0.86);
+  --nav-border: #e2e8f0;
+  --card-shadow: 0 1px 2px rgba(15, 23, 42, 0.04), 0 4px 12px -4px rgba(15, 23, 42, 0.05);
+  --focus-ring: #0284c7;
 }
 
-* {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
+html,
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Inter, Roboto, 'Helvetica Neue', Arial, sans-serif;
   background-color: var(--bg-page);
   color: var(--text-main);
   margin: 0;
-  line-height: 1.6;
-  overflow-x: hidden;
-  transition: background-color 0.2s ease, color 0.2s ease;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 180ms ease, color 180ms ease;
 }
 
 .mono {
-  font-family: 'JetBrains Mono', monospace;
+  font-family: 'Cascadia Code', 'JetBrains Mono', 'Fira Code', ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 canvas {
@@ -59,72 +88,181 @@ canvas {
   display: block;
 }
 
-/* Top Header & Hero Banner */
-.bk-top-bar {
-  background: linear-gradient(90deg, #091e4a 0%, #0f3378 100%);
-  color: #ffffff;
+button,
+summary,
+label[for],
+input[type="checkbox"],
+input[type="range"],
+select {
+  cursor: pointer;
 }
 
-.bk-subnav {
+button:disabled {
+  cursor: not-allowed;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+/* ==================== STUDIO HEADER ==================== */
+.studio-header {
   background-color: var(--nav-bg);
   border-bottom: 1px solid var(--nav-border);
-  transition: background-color 0.2s ease;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
 }
 
-.bk-hero-banner {
-  background: linear-gradient(135deg, #091d47 0%, #0d3278 55%, #026aa7 100%);
-  position: relative;
-  overflow: hidden;
-  border: 1px solid rgba(56, 189, 248, 0.25);
+.studio-brand-mark {
+  background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+  color: #ffffff;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.14) inset, 0 4px 12px rgba(14, 165, 233, 0.25);
 }
 
-.bk-hero-banner::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background-image: radial-gradient(rgba(56, 189, 248, 0.16) 1px, transparent 1px);
-  background-size: 20px 20px;
-  pointer-events: none;
+/* ==================== COMMAND FORMULA BAR ==================== */
+.formula-bar {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-card);
+  border-radius: 14px;
+  box-shadow: var(--card-shadow);
 }
 
-/* Adaptive Cards & Subcards */
+.formula-input-shell {
+  background-color: var(--bg-input);
+  border: 1px solid var(--border-canvas);
+  border-radius: 10px;
+  transition: border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.formula-input-shell:focus-within {
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.16);
+}
+
+/* ==================== CARDS & SURFACES ==================== */
 .sci-card {
   background-color: var(--bg-card);
   border: 1px solid var(--border-card);
-  border-radius: 15px;
+  border-radius: 14px;
   box-shadow: var(--card-shadow);
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 .sci-subcard {
   background-color: var(--bg-subcard);
   border: 1px solid var(--border-subcard);
-  border-radius: 11px;
-  transition: background-color 0.2s ease, border-color 0.2s ease;
+  border-radius: 10px;
+  transition: background-color 180ms ease, border-color 180ms ease;
 }
 
 .sci-input {
   background-color: var(--bg-input);
-  border: 1px solid var(--border-card);
+  border: 1px solid var(--border-canvas);
+  color: var(--text-main);
+  transition: border-color 160ms ease, background-color 160ms ease;
+}
+
+.sci-input:hover {
+  border-color: var(--accent-sky);
+}
+
+.sci-legend {
+  background-color: var(--bg-legend);
+  border: 1px solid var(--border-subcard);
   color: var(--text-main);
 }
 
-.theme-heading {
-  color: var(--text-heading);
+.sci-canvas-box {
+  border: 1px solid var(--border-canvas);
+  background-color: var(--bg-input);
 }
 
-.theme-muted {
+.circuit-stage {
+  border: 1px solid var(--border-canvas);
+  background-color: var(--bg-input);
+  background-image: radial-gradient(rgba(56, 189, 248, 0.14) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+html[data-theme="light"] .circuit-stage {
+  background-image: radial-gradient(rgba(2, 132, 199, 0.16) 1px, transparent 1px);
+}
+
+.sci-divider {
+  border-color: var(--border-subcard);
+}
+
+.studio-btn-primary {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  transition: background-color 150ms ease, transform 120ms ease;
+}
+
+.studio-btn-primary:hover {
+  background-color: var(--accent-primary-hover);
+}
+
+.studio-pill-active {
+  background-color: var(--accent-primary);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+.studio-pill-idle {
+  background-color: transparent;
   color: var(--text-muted);
+  font-weight: 500;
 }
 
-/* Flash animation when Z-Plane recalculates */
+.studio-pill-idle:hover {
+  color: var(--text-heading);
+  background-color: var(--bg-elevated);
+}
+
+.theme-heading { color: var(--text-heading); }
+.theme-muted { color: var(--text-muted); }
+.theme-sky { color: var(--accent-sky); }
+.theme-rose { color: var(--accent-rose); }
+.theme-emerald { color: var(--accent-emerald); }
+.theme-amber { color: var(--accent-amber); }
+.theme-red { color: var(--accent-red); }
+
+/* ==================== TOOLTIPS ==================== */
+.chart-tooltip {
+  position: absolute;
+  pointer-events: none;
+  z-index: 20;
+  padding: 5px 9px;
+  border-radius: 7px;
+  font-family: 'Cascadia Code', 'JetBrains Mono', ui-monospace, monospace;
+  font-size: 11px;
+  line-height: 1.4;
+  white-space: nowrap;
+  background: rgba(9, 9, 11, 0.94);
+  color: #fafafa;
+  border: 1px solid rgba(56, 189, 248, 0.45);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+  transform: translate(10px, -110%);
+}
+
+html[data-theme="light"] .chart-tooltip {
+  background: rgba(255, 255, 255, 0.97);
+  color: #0f172a;
+  border: 1px solid #0284c7;
+  box-shadow: 0 6px 18px rgba(15, 23, 42, 0.12);
+}
+
 @keyframes recalcPulse {
   0% {
-    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.65);
+    box-shadow: 0 0 0 0 rgba(56, 189, 248, 0.45);
     border-color: #38bdf8;
   }
   70% {
-    box-shadow: 0 0 0 14px rgba(56, 189, 248, 0);
+    box-shadow: 0 0 0 10px rgba(56, 189, 248, 0);
     border-color: #38bdf8;
   }
   100% {
@@ -133,62 +271,56 @@ canvas {
 }
 
 .recalc-flash {
-  animation: recalcPulse 0.75s ease-out;
+  animation: recalcPulse 0.65s ease-out;
 }
 
-/* Spacious, Crystal-Clear KaTeX Typography */
+/* ==================== KATEX TYPOGRAPHY ==================== */
 .katex {
-  font-size: 1.12em !important;
+  font-size: 1.05em !important;
   color: var(--katex-color) !important;
-  line-height: 1.5 !important;
+  line-height: 1.45 !important;
 }
 
-.bk-hero-banner .katex,
-.bk-top-bar .katex,
-.dark-katex .katex {
+.studio-btn-primary .katex,
+.studio-pill-active .katex,
+.bg-\[\#0072bc\] .katex,
+.bg-sky-500 .katex {
   color: #ffffff !important;
 }
 
 .katex-display {
-  margin: 0.55em 0 !important;
+  margin: 0.3em auto !important;
+  width: 100%;
+  text-align: center;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.35rem 0.25rem;
+  padding: 0.25rem 0.15rem;
 }
 
-.math-display-xl .katex {
-  font-size: 1.35em !important;
-}
+.math-display-xl .katex { font-size: 1.18em !important; }
+.math-display-lg .katex { font-size: 1.06em !important; }
+.math-display-md .katex { font-size: 0.94em !important; }
 
-.math-display-lg .katex {
-  font-size: 1.22em !important;
-}
-
-.math-display-md .katex {
-  font-size: 1.14em !important;
-}
-
-/* Custom Scrollbar */
+/* ==================== SCROLLBAR & RANGE SLIDER ==================== */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--bg-subcard);
+  background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #475569;
-  border-radius: 3px;
+  background: rgba(148, 163, 184, 0.35);
+  border-radius: 999px;
 }
 
-/* Range Slider Styling */
 input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
-  height: 7px;
-  background: #334155;
+  height: 6px;
+  background: rgba(148, 163, 184, 0.25);
   border-radius: 999px;
   outline: none;
 }
@@ -200,11 +332,44 @@ html[data-theme="light"] input[type="range"] {
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
   border-radius: 50%;
   background: #fbbf24;
   cursor: pointer;
-  border: 2px solid #0f172a;
-  box-shadow: 0 0 10px rgba(251, 191, 36, 0.65);
+  border: 2px solid var(--bg-page);
+  box-shadow: 0 0 0 2px rgba(251, 191, 36, 0.3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ==================== PRINT / PDF ACADEMIC MODE ==================== */
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+  html, body {
+    background: #ffffff !important;
+    color: #0f172a !important;
+    --bg-page: #ffffff;
+    --bg-card: #ffffff;
+    --bg-subcard: #f8fafc;
+    --bg-input: #ffffff;
+    --bg-legend: #f8fafc;
+    --border-card: #cbd5e1;
+    --border-subcard: #cbd5e1;
+    --border-canvas: #94a3b8;
+    --text-main: #0f172a;
+    --text-heading: #0f172a;
+    --text-muted: #475569;
+    --katex-color: #0f172a;
+    --card-shadow: none;
+  }
+  header, .no-print, .chart-tooltip { display: none !important; }
+  .sci-card, .sci-subcard, .formula-bar { box-shadow: none !important; break-inside: avoid; }
+  .max-h-48 { max-height: none !important; overflow: visible !important; }
 }

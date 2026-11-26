@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="icon" type="image/png" href="assets/bk-logo.png" />
+  <title>Báo cáo Đồ án Môn học — Đề tài 13: Phân tích Biểu đồ Pole-Zero & Đáp ứng Tần số Hệ LTI | HCMUT</title>
+  <link rel="stylesheet" href="vendor/katex/katex.min.css" />
+  <script src="vendor/katex/katex.min.js"></script>
+  <script src="vendor/katex/auto-render.min.js"></script>
+  <style>
+    @page {
+      size: A4 portrait;
+      margin: 20mm 18mm 20mm 24mm;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Times New Roman', Times, Georgia, serif;
+      font-size: 13pt;
+      line-height: 1.55;
+      color: #111827;
+      background: #e5e7eb;
+      margin: 0;
+      padding: 0;
+    }
+
+    .report-shell {
+      max-width: 210mm;
+      margin: 14px auto;
+      background: #ffffff;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+      padding: 20mm 18mm 20mm 24mm;
+    }
+
+    @media print {
+      body {
+        background: #ffffff;
+      }
+      .report-shell {
+        max-width: none;
+        margin: 0;
+        padding: 0;
+        box-shadow: none;
+      }
+      .no-print {
+        display: none !important;
+      }
+    }
+
+    .print-toolbar {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      background: #0b2559;
+      color: #ffffff;
+      padding: 10px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+    }
+
+    .print-btn {
+      background: #0ea5e9;
+      color: #ffffff;
+      border: none;
+      padding: 7px 16px;
+      border-radius: 7px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .page-break {
+      page-break-after: always;
+      break-after: page;
+    }
+
+    /* Cover Page (HCMUT Formal Double Frame) */
+    .cover-frame {
+      border: 3px double #0b2559;
+      outline: 1px solid #0b2559;
+      outline-offset: 4px;
+      height: 248mm;
+      padding: 9mm 10mm;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .cover-uni {
+      font-size: 12.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #0b2559;
+      line-height: 1.38;
+    }
+
+    .cover-logo {
+      width: 78px;
+      height: 78px;
+      object-fit: contain;
+      margin: 8px auto;
+    }
+
+    .cover-course {
+      font-size: 13.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #0b2559;
+      margin-top: 2px;
+    }
+
+    .cover-title-box {
+      border-top: 2px solid #0b2559;
+      border-bottom: 2px solid #0b2559;
+      padding: 10px 8px;
+      margin: 8px 0;
+      background: #f8fafc;
+    }
+
+    .cover-topic-tag {
+      font-size: 12.5pt;
+      font-weight: bold;
+      color: #0369a1;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .cover-title {
+      font-size: 15.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #0b2559;
+      line-height: 1.35;
+    }
+
+    .cover-meta {
+      text-align: left;
+      width: 96%;
+      margin: 6px auto;
+      font-size: 11pt;
+      line-height: 1.48;
+      border-collapse: collapse;
+    }
+
+    .cover-meta td {
+      padding: 3px 5px;
+      vertical-align: top;
+      border: none;
+    }
+
+    .cover-footer {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #0b2559;
+    }
+
+    /* Headings */
+    h1.chapter-title {
+      font-size: 15.5pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      color: #0b2559;
+      border-bottom: 2px solid #0b2559;
+      padding-bottom: 5px;
+      margin: 22px 0 12px 0;
+      page-break-after: avoid;
+    }
+
+    h2 {
+      font-size: 13.5pt;
+      font-weight: bold;
+      color: #0b2559;
+      margin: 16px 0 8px 0;
+      page-break-after: avoid;
+    }
+
+    h3 {
+      font-size: 12.8pt;
+      font-weight: bold;
+      color: #1e3a8a;
+      margin: 12px 0 6px 0;
+      page-break-after: avoid;
+    }
+
+    p {
+      text-align: justify;
+      margin: 0 0 9px 0;
+    }
+
+    ul, ol {
+      margin: 4px 0 10px 0;
+      padding-left: 22px;
+    }
+
+    li {
+      margin-bottom: 4px;
+      text-align: justify;
+    }
+
+    /* Tables */
+    table.acad-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0 16px 0;
+      font-size: 11.5pt;
+      line-height: 1.4;
+    }
+
+    table.acad-table th,
+    table.acad-table td {
+      border: 1px solid #475569;
+      padding: 7px 8px;
+      vertical-align: middle;
+    }
+
+    table.acad-table th {
+      background: #e0f2fe;
+      color: #0b2559;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .table-caption {
+      font-size: 11.5pt;
+      font-style: italic;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0 4px 0;
+      color: #1e293b;
+    }
+
+    /* Formula & Code Callouts */
+    .math-box {
+      background: #f8fafc;
+      border-left: 3px solid #0284c7;
+      padding: 8px 12px;
+      margin: 10px 0;
+      overflow: visible;
+    }
+
+    pre.code-block {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      border-radius: 5px;
+      padding: 10px 12px;
+      font-family: 'Cascadia Code', Consolas, monospace;
+      font-size: 9.8pt;
+      line-height: 1.42;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      margin: 8px 0 12px 0;
+    }
+
+    code {
+      font-family: 'Cascadia Code', Consolas, monospace;
+      font-size: 10.5pt;
+      background: #f1f5f9;
+      padding: 1px 4px;
+      border-radius: 3px;
+    }
+
+    /* Figures */
+    .fig-block {
+      text-align: center;
+      margin: 14px 0 16px 0;
+      break-inside: avoid;
+    }
+
+    .fig-block img {
+      max-width: 96%;
+      max-height: 118mm;
+      object-fit: contain;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    .fig-caption {
+      font-size: 11pt;
+      font-style: italic;
+      color: #334155;
+      margin-top: 6px;
+      text-align: center;
+    }
+
+    /* TOC */
+    .toc-row {
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dotted #94a3b8;
+      padding: 2px 0;
+      font-size: 10.6pt;
+      line-height: 1.3;
+    }
+    .toc-row.major {
+      font-weight: bold;
+      color: #0b2559;
+      margin-top: 4px;
+    }
+    .toc-row.sub {
+      padding-left: 18px;
+    }
+
+    .katex {
+      font-size: 1.02em !important;
+    }
+
+    .sig-box {
+      height: 36px;
+    }
+
+    table.contrib-table th,
+    table.contrib-table td {
+      padding: 5px 6px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="print-toolbar no-print">
+    <div><strong>Báo cáo Đồ án Môn học — Đề tài 13 (HCMUT)</strong> • Định dạng chuẩn A4 sẵn sàng xuất PDF</div>
+    <button class="print-btn" onclick="window.print()">In / Xuất File PDF (A4)</button>
+  </div>
+
+  <div class="report-shell">
+
+    <!-- ==================== TRANG BÌA (KHÔNG TÍNH VÀO 10 TRANG NỘI DUNG) ==================== -->
+    <section class="cover-frame page-break">
+      <div>
+        <div class="cover-uni">
+          ĐẠI HỌC QUỐC GIA THÀNH PHỐ HỒ CHÍ MINH<br />
+          TRƯỜNG ĐẠI HỌC BÁCH KHOA<br />
+          KHOA ĐIỆN – ĐIỆN TỬ / BỘ MÔN XỬ LÝ TÍN HIỆU
+        </div>
+        <img src="assets/bk-logo.png" alt="Logo Đại học Bách Khoa TP.HCM" class="cover-logo" />
+        <div class="cover-course">BÁO CÁO BÀI TẬP LỚN — XỬ LÝ SỐ TÍN HIỆU (DSP)</div>
+      </div>
+
+      <div class="cover-title-box">
+        <div class="cover-topic-tag">Đề tài 13</div>
+        <div class="cover-title">
+          XÂY DỰNG WEB APP TƯƠNG TÁC PHÂN TÍCH<br />
+          BIỂU ĐỒ POLE-ZERO, MIỀN HỘI TỤ (ROC)<br />
+          VÀ ĐÁP ỨNG TẦN SỐ HỆ THỐNG LTI
+        </div>
+      </div>
+
+      <table class="cover-meta">
+        <tr>
+          <td style="width: 30%;"><strong>Giảng viên hướng dẫn:</strong></td>
+          <td>................................................................</td>
+        </tr>
+        <tr>
+          <td><strong>Lớp / Nhóm học phần:</strong></td>
+          <td>................................................................</td>
+        </tr>
+        <tr>
+          <td><strong>Nhóm thực hiện:</strong></td>
+          <td>
+            1. [Họ và tên thành viên 1] — MSSV: ............<br />
+            2. [Họ và tên thành viên 2] — MSSV: ............<br />
+            3. [Họ và tên thành viên 3] — MSSV: ............<br />
+            4. [Họ và tên thành viên 4] — MSSV: ............
+          </td>
+        </tr>
+        <tr>
+          <td><strong>Link Web App (Live):</strong></td>
+          <td><code style="font-size: 9.5pt;">https://anhletuan2408-glitch.github.io/xulysotinhieu/</code></td>
+        </tr>
+      </table>
+
+      <div class="cover-footer">
+        THÀNH PHỐ HỒ CHÍ MINH, THÁNG 11 NĂM 2026
+      </div>
+    </section>
+
+    <!-- ==================== LỜI NÓI ĐẦU & LỜI CẢM ƠN ==================== -->
+    <section class="page-break">
+      <h1 class="chapter-title" style="text-align: center; border-bottom: none;">LỜI NÓI ĐẦU VÀ LỜI CẢM ƠN</h1>
+
+      <p>
+        Trong chương trình đào tạo kỹ sư tại Trường Đại học Bách Khoa – ĐHQG TP.HCM, môn học <strong>Xử lý Số Tín hiệu (Digital Signal Processing – DSP)</strong> giữ vai trò nền tảng cho nhiều lĩnh vực trọng yếu như viễn thông, xử lý âm thanh – hình ảnh, đo lường điều khiển, kỹ thuật y sinh và trí tuệ nhân tạo biên. Một trong những trụ cột lý thuyết quan trọng nhất nhưng cũng dễ gây trừu tượng cho sinh viên khi tiếp cận lần đầu chính là mối liên hệ hình học giữa <strong>vị trí Cực (Poles) và Không điểm (Zeros)</strong> trên mặt phẳng phức $Z$ với <strong>Miền hội tụ (ROC)</strong>, <strong>tính ổn định BIBO</strong>, <strong>đáp ứng xung $h[n]$</strong> và <strong>đáp ứng tần số $H(e^{j\omega})$</strong> của hệ thống tuyến tính bất biến theo thời gian (LTI).
+      </p>
+
+      <p>
+        Xuất phát từ nhu cầu trực quan hóa kiến thức lý thuyết thành trải nghiệm tương tác tức thì ngay trên trình duyệt, nhóm chúng em đã thực hiện <strong>Đề tài 13: "Xây dựng Web App Tương tác Phân tích Biểu đồ Pole-Zero và Đáp ứng Tần số Hệ LTI"</strong>. Sản phẩm <strong>LTI Pole-Zero Studio</strong> được thiết kế thuần JavaScript/HTML5 Canvas theo triết lý <em>Precision Studio</em>, vận hành hoàn toàn độc lập (100% offline không cần backend hay cài đặt môi trường), cho phép sinh viên vừa nhập trực tiếp biểu thức đại số $H(z)$ bất kỳ, vừa kéo thả trực tiếp Cực/Zero ở tốc độ 60 FPS để quan sát đồng thời mặt phẳng 2D, bề mặt 3D $|H(z)|$, đồ thị Biên độ/Pha/Trễ nhóm, đáp ứng miền thời gian và sơ đồ mạch điện tương đương miền $s$.
+      </p>
+
+      <p>
+        Nhóm xin gửi lời cảm ơn chân thành đến quý Thầy/Cô giảng dạy bộ môn Xử lý Số Tín hiệu đã truyền đạt nền tảng kiến thức toán học vững chắc, định hướng yêu cầu kỹ thuật sát với thực tế và tạo điều kiện để nhóm hoàn thành đồ án này. Dù đã cố gắng kiểm chứng chặt chẽ cả về giải thuật lẫn giao diện người dùng, báo cáo và phần mềm chắc chắn vẫn còn những điểm có thể tiếp tục hoàn thiện. Nhóm rất mong nhận được những ý kiến đóng góp quý báu từ quý Thầy/Cô.
+      </p>
+
+      <p style="text-align: right; margin-top: 32px; font-style: italic;">
+        TP. Hồ Chí Minh, ngày ...... tháng 11 năm 2026<br />
+        <strong>Đại diện nhóm thực hiện</strong>
+      </p>
+    </section>
+
+    <!-- ==================== TRANG XÁC NHẬN % ĐÓNG GÓP & CHỮ KÝ THÀNH VIÊN ==================== -->
+    <section class="page-break">
+      <h1 class="chapter-title" style="text-align: center; border-bottom: none; margin: 4px 0 8px 0; font-size: 14.5pt;">
+        BẢNG XÁC NHẬN PHÂN CÔNG NHIỆM VỤ<br />VÀ TỶ LỆ ĐÓNG GÓP CỦA CÁC THÀNH VIÊN
+      </h1>
+
+      <p style="font-size: 11.8pt; margin-bottom: 6px;">
+        Nhóm thực hiện <strong>Đề tài 13</strong> cam kết bảng phân công nhiệm vụ và tỷ lệ phần trăm (%) đóng góp dưới đây phản ánh trung thực mức độ tham gia thực tế của từng thành viên trong suốt quá trình nghiên cứu lý thuyết, xây dựng giải thuật DSP, thiết kế giao diện, kiểm thử phần mềm và biên soạn báo cáo. Các thành viên cùng thống nhất và ký tên xác nhận (<strong>Tổng tỷ lệ đóng góp bằng đúng 100%</strong>).
+      </p>
+
+      <div class="table-caption" style="margin: 6px 0 4px 0;">Bảng 0.1: Phân công nhiệm vụ và xác nhận tỷ lệ % đóng góp của các thành viên</div>
+      <table class="acad-table contrib-table" style="font-size: 9.8pt; line-height: 1.32; margin: 4px 0 8px 0;">
+        <thead>
+          <tr>
+            <th style="width: 6%;">STT</th>
+            <th style="width: 22%;">Họ và Tên</th>
+            <th style="width: 13%;">MSSV</th>
+            <th style="width: 34%;">Nhiệm vụ đảm nhận chi tiết</th>
+            <th style="width: 10%;">Đóng góp (%)</th>
+            <th style="width: 15%;">Ký tên xác nhận</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="text-align: center;">1</td>
+            <td>[Họ và tên TV 1]</td>
+            <td style="text-align: center;">[MSSV 1]</td>
+            <td>
+              Phát triển lõi toán học DSP (<code>js/dsp.js</code>): bộ phân tích đại số hữu tỷ Laurent $H(z)$, giải nghiệm Aberth-Ehrlich, PFE cực đơn &amp; cực bội tìm $h[n]$, trễ nhóm giải tích.
+            </td>
+            <td style="text-align: center; font-weight: bold;">25%</td>
+            <td class="sig-box"></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;">2</td>
+            <td>[Họ và tên TV 2]</td>
+            <td style="text-align: center;">[MSSV 2]</td>
+            <td>
+              Xây dựng hệ thống đồ họa 60 FPS (<code>js/charts.js</code>): Mặt phẳng 2D $Z$ chống chồng nhãn, bề mặt 3D $|H(z)|$, đồ thị Biên độ/Pha/Trễ nhóm và Miền thời gian.
+            </td>
+            <td style="text-align: center; font-weight: bold;">25%</td>
+            <td class="sig-box"></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;">3</td>
+            <td>[Họ và tên TV 3]</td>
+            <td style="text-align: center;">[MSSV 3]</td>
+            <td>
+              Thiết kế giao diện Precision Studio (<code>index.html</code>, <code>css/styles.css</code>), bộ điều khiển tương tác &amp; 12 sơ đồ mạch điện SVG (<code>js/app.js</code>), tối ưu Dark/Light Mode &amp; Offline.
+            </td>
+            <td style="text-align: center; font-weight: bold;">25%</td>
+            <td class="sig-box"></td>
+          </tr>
+          <tr>
+            <td style="text-align: center;">4</td>
+            <td>[Họ và tên TV 4]</td>
+            <td style="text-align: center;">[MSSV 4]</td>
+            <td>
+              Xây dựng bộ kiểm thử 15 kịch bản DSP, kiểm thử trình duyệt (Desktop/Mobile), biên soạn Báo cáo Đồ án, Tài liệu hướng dẫn học tập và đóng gói bản phát hành.
+            </td>
+            <td style="text-align: center; font-weight: bold;">25%</td>
+            <td class="sig-box"></td>
+          </tr>
+          <tr style="background: #f1f5f9;">
+            <td colspan="4" style="text-align: right; font-weight: bold; text-transform: uppercase;">Tổng tỷ lệ đóng góp của cả nhóm:</td>
+            <td style="text-align: center; font-weight: bold; color: #0b2559; font-size: 11.5pt;">100%</td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p style="font-size: 10.5pt; font-style: italic; color: #334155; margin-bottom: 4px;">
+        * Ghi chú: Nhóm có thể điều chỉnh số lượng dòng thành viên và tỷ lệ % thực tế trước khi in/ký, đảm bảo tổng cột Đóng góp luôn bằng chính xác <strong>100%</strong>.
+      </p>
+
+      <div style="display: flex; justify-content: flex-end; margin-top: 12px;">
+        <div style="text-align: center; width: 46%; font-size: 11.5pt;">
+          <em>TP. Hồ Chí Minh, ngày ...... tháng 11 năm 2026</em><br />
+          <strong>Nhóm trưởng xác nhận</strong><br />
+          <em>(Ký và ghi rõ họ tên)</em>
+          <div style="height: 48px;"></div>
+          <strong>[Họ và tên nhóm trưởng]</strong>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== MỤC LỤC ==================== -->
+    <section class="page-break">
+      <h1 class="chapter-title" style="text-align: center; border-bottom: none; margin: 4px 0 8px 0;">MỤC LỤC</h1>
+
+      <div class="toc-row major"><span>CHƯƠNG 1: TỔNG QUAN ĐỀ TÀI VÀ YÊU CẦU THIẾT KẾ</span><span>1</span></div>
+      <div class="toc-row sub"><span>1.1. Đặt vấn đề và bối cảnh môn học Xử lý Số Tín hiệu</span><span>1</span></div>
+      <div class="toc-row sub"><span>1.2. Mục tiêu và đối chiếu yêu cầu kỹ thuật của Đề tài 13</span><span>1</span></div>
+      <div class="toc-row sub"><span>1.3. Phạm vi ứng dụng và tính đóng góp của sản phẩm</span><span>2</span></div>
+
+      <div class="toc-row major"><span>CHƯƠNG 2: CƠ SỞ LÝ THUYẾT TOÁN HỌC HỆ THỐNG LTI &amp; BIẾN ĐỔI Z</span><span>3</span></div>
+      <div class="toc-row sub"><span>2.1. Mô hình hệ thống LTI rời rạc và phương trình sai phân</span><span>3</span></div>
+      <div class="toc-row sub"><span>2.2. Biến đổi Z hai phía, Hàm truyền H(z) và Cực – Zero</span><span>3</span></div>
+      <div class="toc-row sub"><span>2.3. Miền hội tụ (ROC), tính nhân quả và tiêu chuẩn ổn định BIBO</span><span>4</span></div>
+      <div class="toc-row sub"><span>2.4. Giải thích hình học đáp ứng tần số và bề mặt 3D |H(z)|</span><span>5</span></div>
+      <div class="toc-row sub"><span>2.5. Đáp ứng pha, pha cực tiểu và trễ nhóm giải tích</span><span>6</span></div>
+      <div class="toc-row sub"><span>2.6. Khái quát hóa mạch điện tương đương miền s (Bilinear Transform)</span><span>6</span></div>
+
+      <div class="toc-row major"><span>CHƯƠNG 3: KIẾN TRÚC PHẦN MỀM VÀ GIẢI THUẬT CỐT LÕI</span><span>8</span></div>
+      <div class="toc-row sub"><span>3.1. Kiến trúc tách module và cơ chế vận hành 100% Offline</span><span>8</span></div>
+      <div class="toc-row sub"><span>3.2. Bộ phân tích biểu thức đại số Laurent hữu tỷ H(z)</span><span>9</span></div>
+      <div class="toc-row sub"><span>3.3. Giải thuật tìm nghiệm đa thức Aberth-Ehrlich và gom cụm cực bội</span><span>10</span></div>
+      <div class="toc-row sub"><span>3.4. Khai triển phân thức tối giản (PFE) cho cực đơn và cực bội</span><span>10</span></div>
+      <div class="toc-row sub"><span>3.5. Bộ giải miền thời gian (Nhân quả, Phản nhân quả, Hai phía)</span><span>11</span></div>
+      <div class="toc-row sub"><span>3.6. Kiến trúc đồ họa HiDPI Canvas 2D/3D và chống chồng nhãn</span><span>11</span></div>
+
+      <div class="toc-row major"><span>CHƯƠNG 4: THIẾT KẾ GIAO DIỆN PRECISION STUDIO VÀ TRỰC QUAN HÓA</span><span>12</span></div>
+      <div class="toc-row sub"><span>4.1. Triết lý thiết kế giao diện kỹ thuật và chuẩn tương phản WCAG</span><span>12</span></div>
+      <div class="toc-row sub"><span>4.2. Trực quan hóa giao diện thực tế (Dark/Light Mode, 3D và Mạch điện)</span><span>12</span></div>
+
+      <div class="toc-row major"><span>CHƯƠNG 5: KIỂM THỬ TOÁN HỌC, THỰC NGHIỆM VÀ ĐÁNH GIÁ HIỆU NĂNG</span><span>17</span></div>
+      <div class="toc-row sub"><span>5.1. Kiểm chứng tự động 15 kịch bản hệ thống LTI chuẩn</span><span>17</span></div>
+      <div class="toc-row sub"><span>5.2. Phân tích 4 bài thực hành khám phá điển hình trên Web App</span><span>19</span></div>
+      <div class="toc-row sub"><span>5.3. Đánh giá hiệu năng thời gian thực và độ ổn định trình duyệt</span><span>20</span></div>
+
+      <div class="toc-row major"><span>CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</span><span>21</span></div>
+      <div class="toc-row sub"><span>6.1. Tổng kết kết quả đạt được</span><span>21</span></div>
+      <div class="toc-row sub"><span>6.2. Hạn chế và hướng phát triển mở rộng</span><span>21</span></div>
+      <div class="toc-row major"><span>TÀI LIỆU THAM KHẢO</span><span>22</span></div>
+    </section>
+
+    <!-- ========================================================================= -->
+    <!-- BẮT ĐẦU PHẦN NỘI DUNG CHÍNH (TỐI THIỂU 10 TRANG NỘI DUNG THỰC CHẤT)      -->
+    <!-- ========================================================================= -->
+
+    <!-- ==================== CHƯƠNG 1 ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 1: TỔNG QUAN ĐỀ TÀI VÀ YÊU CẦU THIẾT KẾ</h1>
+
+      <h2>1.1. Đặt vấn đề và bối cảnh môn học Xử lý Số Tín hiệu</h2>
+      <p>
+        Trong phân tích và thiết kế hệ thống tuyến tính bất biến theo thời gian rời rạc (Discrete-Time LTI Systems), hàm truyền miền $Z$ ký hiệu $H(z)$ đóng vai trò cầu nối trung tâm giữa mô tả miền thời gian (phương trình sai phân và đáp ứng xung $h[n]$) với mô tả miền tần số (đáp ứng biên độ $|H(e^{j\omega})|$, đáp ứng pha $\angle H(e^{j\omega})$ và trễ nhóm $\tau_g(\omega)$). Tuy nhiên, khi sinh viên giải bài tập trên giấy hoặc chạy các đoạn lệnh tĩnh trên MATLAB/Python, việc thay đổi một tham số vị trí cực $p_k = r e^{j\theta}$ hay không điểm $z_i$ đòi hỏi phải tính lại đa thức, vẽ lại biểu đồ và đối chiếu thủ công nhiều đồ thị tách rời.
+      </p>
+      <p>
+        Điều này tạo ra khoảng cách nhận thức lớn: người học thường ghi nhớ máy móc quy tắc "cực trong đường tròn đơn vị thì ổn định" mà chưa cảm nhận trực giác tại sao khi kéo một cặp cực tiến sát đường tròn đơn vị ($r \to 1$) thì đỉnh cộng hưởng nhọn vọt lên, độ rộng băng thông $-3\text{ dB}$ co hẹp theo quy luật $\Delta\omega_{-3\text{dB}} \approx 2(1-r)$, đồng thời đáp ứng xung $h[n]$ tắt dần chậm đi; hay tại sao cùng một hàm truyền $H(z)$ nhưng chỉ cần thay đổi <strong>Miền hội tụ (ROC)</strong> thì hệ thống có thể chuyển từ bất ổn định nhân quả sang ổn định phản nhân quả.
+      </p>
+
+      <h2>1.2. Mục tiêu và đối chiếu yêu cầu kỹ thuật của Đề tài 13</h2>
+      <p>
+        Nhằm giải quyết triệt để bài toán trực quan hóa nêu trên, nhóm đã xây dựng ứng dụng web tương tác <strong>LTI Pole-Zero Studio</strong> đáp ứng đầy đủ và mở rộng vượt mức toàn bộ yêu cầu kỹ thuật của Đề tài 13, được tổng hợp tại Bảng 1.1.
+      </p>
+
+      <div class="table-caption">Bảng 1.1: Đối chiếu yêu cầu kỹ thuật của Đề tài 13 và mức độ hoàn thành của sản phẩm</div>
+      <table class="acad-table">
+        <thead>
+          <tr>
+            <th style="width: 24%;">Hạng mục yêu cầu</th>
+            <th style="width: 34%;">Yêu cầu gốc của Đề tài 13</th>
+            <th style="width: 42%;">Giải pháp triển khai trong LTI Pole-Zero Studio</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Nhập hàm truyền $H(z)$</strong></td>
+            <td>Nhập hàm truyền $H(z)$ hoặc kéo thả Pole/Zero trên mặt phẳng phức.</td>
+            <td>Hỗ trợ đồng thời 4 cách nhập: (1) Biểu thức đại số tự do theo $z, z^{-1}$, phân thức lồng nhau, lũy thừa; (2) Kéo thả 60 FPS có bắt dính $|z|=1$, Zoom, Undo/Redo; (3) Sửa trực tiếp bảng tọa độ $(Re, Im)$ hoặc $(r, \angle^\circ)$; (4) Nhập mảng hệ số $[b_m], [a_k]$.</td>
+          </tr>
+          <tr>
+            <td><strong>Đường tròn đơn vị &amp; ROC</strong></td>
+            <td>Tự động vẽ đường tròn đơn vị và xác định Miền hội tụ (ROC).</td>
+            <td>Vẽ đường tròn đơn vị $|z|=1$, tô bóng và đánh dấu biên ROC màu đỏ đặc trưng cho cả 3 chế độ (Nhân quả, Phản nhân quả, Hai phía chứa $|z|=1$), hiển thị cực/zero ẩn tại gốc $z=0$ và đánh giá ổn định BIBO tức thì.</td>
+          </tr>
+          <tr>
+            <td><strong>Đáp ứng xung $h[n]$</strong></td>
+            <td>Tính và vẽ đáp ứng xung $h[n]$.</td>
+            <td>Xuất <strong>công thức giải tích đóng LaTeX</strong> $h[n] = \mathcal{Z}^{-1}\{H(z)\}$ hỗ trợ cả <strong>cực đơn lẫn cực bội</strong>, đồng thời vẽ đồ thị rời rạc $h[n]$, nhảy bậc $s[n]$ và mô phỏng lọc tín hiệu thực tế $x[n] \to y[n]$ (2 sin, sin+nhiễu, sóng vuông, chirp).</td>
+          </tr>
+          <tr>
+            <td><strong>Đồ thị Biên độ &amp; Pha</strong></td>
+            <td>Vẽ đồ thị Biên độ $|H(e^{j\omega})|$ và Pha $\angle H(e^{j\omega})$.</td>
+            <td>Vẽ Biên độ (Tuyến tính/dB, vạch $-3\text{ dB}$, chống bẹp đỉnh khi cực trên $|z|=1$), Pha Wrapped (ngắt nhảy sạch), Pha Liên tục (Unwrapped), <strong>Trễ nhóm giải tích $\tau_g(\omega)$</strong>, quy đổi tần số thực $f$ (Hz) theo $f_s$, và <strong>Mặt cong 3D $|H(z)|$</strong> xoay tự do.</td>
+          </tr>
+          <tr>
+            <td><strong>Tính năng mở rộng học thuật</strong></td>
+            <td>Trực quan hóa phục vụ học tập &amp; demo trực tiếp trên trình duyệt.</td>
+            <td>Tự động phân định loại bộ lọc, kết luận &amp; gợi ý ứng dụng thực tế; hiển thị <strong>12 sơ đồ mạch điện SVG tương đương (RC, CR, RLC, Twin-T Notch, Lattice All-Pass, FIR Delay Line...)</strong> kèm công thức khái quát miền $s$; nút <strong>Quét tự động $\omega_0$</strong>; chạy <strong>100% Offline</strong> không cần mạng.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>1.3. Phạm vi ứng dụng và tính đóng góp của sản phẩm</h2>
+      <p>
+        Khác với các ứng dụng Python Streamlit yêu cầu khởi chạy máy chủ cục bộ hoặc phụ thuộc kết nối internet để tải thư viện CDN, <strong>LTI Pole-Zero Studio</strong> được kiến trúc hoàn toàn phía trình duyệt (Client-side Pure JS + HTML5 Canvas) và đóng gói sẵn toàn bộ thư viện giao diện (Tailwind CSS), thư viện công thức toán học (KaTeX + 20 phông chữ <code>.woff2</code>) và biểu trưng chính thức Trường Đại học Bách Khoa TP.HCM. Nhờ đó, giảng viên và sinh viên chỉ cần mở trực tiếp tệp <code>index.html</code> hoặc tệp đơn độc lập <code>LTI_Pole_Zero_SingleFile.html</code> là có thể trình chiếu, giảng dạy và tự thực hành trên mọi hệ điều hành (Windows, macOS, Linux, máy tính bảng) ngay cả trong phòng học không có kết nối Wi-Fi.
+      </p>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== CHƯƠNG 2 ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 2: CƠ SỞ LÝ THUYẾT TOÁN HỌC HỆ THỐNG LTI &amp; BIẾN ĐỔI Z</h1>
+
+      <h2>2.1. Mô hình hệ thống LTI rời rạc và phương trình sai phân</h2>
+      <p>
+        Một hệ thống xử lý tín hiệu số tuyến tính bất biến theo thời gian (LTI) nhân quả, hữu hạn bậc được đặc trưng bởi phương trình sai phân tuyến tính hệ số hằng (Linear Constant-Coefficient Difference Equation – LCCDE) bậc $N$:
+      </p>
+      <div class="math-box">
+        $$\begin{gathered}\sum_{k=0}^{N} a_k y[n-k] = \sum_{m=0}^{M} b_m x[n-m] \\[4pt] \iff y[n] = \frac{1}{a_0}\left(\sum_{m=0}^{M} b_m x[n-m] - \sum_{k=1}^{N} a_k y[n-k]\right)\end{gathered}$$
+      </div>
+      <p>
+        Trong đó $x[n]$ là tín hiệu đầu vào rời rạc, $y[n]$ là tín hiệu đầu ra, các hệ số thực $\{b_m\}_{m=0}^M$ quyết định nhánh truyền thẳng (feedforward) và $\{a_k\}_{k=1}^N$ quyết định nhánh hồi tiếp (feedback). Khi mọi hệ số $a_k = 0$ với $k \ge 1$, hệ thống không có vòng hồi tiếp và trở thành bộ lọc <strong>FIR (Finite Impulse Response)</strong> với đáp ứng xung hữu hạn $h[n] = \frac{b_n}{a_0}$. Ngược lại, khi tồn tại ít nhất một $a_k \neq 0$ ($k \ge 1$), hệ thống thuộc lớp <strong>IIR (Infinite Impulse Response)</strong> có đáp ứng xung kéo dài vô hạn.
+      </p>
+
+      <h2>2.2. Biến đổi Z hai phía, Hàm truyền $H(z)$ và biểu diễn Cực – Zero</h2>
+      <p>
+        Biến đổi $Z$ hai phía của một dãy rời rạc $h[n]$ được định nghĩa trên mặt phẳng phức $z = r e^{j\omega} \in \mathbb{C}$ như sau:
+      </p>
+      <div class="math-box">
+        $$H(z) = \mathcal{Z}\{h[n]\} = \sum_{n=-\infty}^{+\infty} h[n] z^{-n}$$
+      </div>
+      <p>
+        Áp dụng biến đổi $Z$ cho hai vế phương trình sai phân với điều kiện ban đầu bằng không, ta thu được hàm truyền hữu tỷ của hệ thống LTI theo lũy thừa âm của $z^{-1}$ và dạng phân tích nhân tử theo nghiệm Cực – Zero:
+      </p>
+      <div class="math-box">
+        $$H(z) = \frac{Y(z)}{X(z)} = \frac{B(z)}{A(z)} = \frac{\sum_{m=0}^{M} b_m z^{-m}}{\sum_{k=0}^{N} a_k z^{-k}} = K \cdot z^{-d} \cdot \frac{\prod_{i=1}^{M'} \left(1 - z_i z^{-1}\right)}{\prod_{k=1}^{N'} \left(1 - p_k z^{-1}\right)}$$
+      </div>
+      <ul>
+        <li><strong>Không điểm hữu hạn (Zeros – $z_i$):</strong> Là nghiệm khác $0$ của đa thức tử số $B(z) = 0$, được ký hiệu bằng vòng tròn $\circ$ trên mặt phẳng $Z$. Tại $z = z_i$, hàm truyền bị triệt tiêu $H(z_i) = 0$.</li>
+        <li><strong>Cực hữu hạn (Poles – $p_k$):</strong> Là nghiệm khác $0$ của đa thức mẫu số $A(z) = 0$, được ký hiệu bằng dấu chéo $\times$. Tại $z = p_k$, biên độ $|H(z)| \to \infty$.</li>
+        <li><strong>Cực và Zero tại gốc tọa độ $z = 0$:</strong> Khi quy đồng về lũy thừa dương của $z$, chênh lệch bậc $N - M$ tạo ra $|N - M|$ nghiệm ẩn tại gốc tọa độ: nếu $N > M$ hệ có $N - M$ Zero tại $z=0$; nếu $M > N$ (điển hình là mọi bộ lọc FIR bậc $M$) hệ có $M - N$ Cực tại $z = 0$. Khoảng cách từ gốc $z=0$ tới mọi điểm $e^{j\omega}$ luôn bằng $1$ nên các nghiệm tại $z=0$ không làm thay đổi biên độ $|H(e^{j\omega})|$ mà chỉ đóng góp thành phần pha tuyến tính.</li>
+        <li><strong>Tính đối xứng liên hợp phức:</strong> Vì các hệ số $b_m, a_k \in \mathbb{R}$, mọi cực hoặc zero phức có phần ảo khác $0$ luôn xuất hiện thành từng cặp liên hợp đối xứng qua trục thực: $p = r e^{j\theta}$ và $p^* = r e^{-j\theta}$.</li>
+      </ul>
+
+      <h2>2.3. Miền hội tụ (ROC), tính nhân quả và tiêu chuẩn ổn định BIBO</h2>
+      <p>
+        Biến đổi $Z$ chỉ xác định duy nhất đáp ứng xung $h[n]$ khi đi kèm <strong>Miền hội tụ (Region of Convergence – ROC)</strong> — tập hợp các giá trị $z \in \mathbb{C}$ làm chuỗi lũy thừa hội tụ tuyệt đối:
+      </p>
+      <div class="math-box">
+        $$\text{ROC} = \left\{ z \in \mathbb{C} : \sum_{n=-\infty}^{+\infty} |h[n]| \cdot |z|^{-n} < \infty \right\}$$
+      </div>
+      <p>
+        Về mặt hình học, ROC của hệ LTI hữu tỷ luôn là hình tròn, hình vành khăn hoặc phần ngoài hình tròn đồng tâm tại gốc tọa độ và <strong>không bao giờ chứa bất kỳ cực nào</strong>. Gọi $r_{\max} = \max_k |p_k|$ và $r_{\min} = \min_k |p_k|$ (với $p_k \neq 0$). Tiêu chuẩn <strong>ổn định BIBO (Bounded-Input Bounded-Output)</strong> đòi hỏi $\sum_{n=-\infty}^{\infty} |h[n]| < \infty$, tương đương trực tiếp với điều kiện: <strong>ROC phải chứa đường tròn đơn vị $|z| = 1$</strong>. Bảng 2.1 tổng hợp 3 cấu hình ROC cơ bản được hỗ trợ trực tiếp trong công cụ.
+      </p>
+
+      <div class="table-caption">Bảng 2.1: Phân loại Miền hội tụ (ROC), tính nhân quả và điều kiện ổn định BIBO</div>
+      <table class="acad-table">
+        <thead>
+          <tr>
+            <th style="width: 22%;">Loại hệ thống</th>
+            <th style="width: 22%;">Miền xác định $h[n]$</th>
+            <th style="width: 24%;">Biểu thức ROC</th>
+            <th style="width: 32%;">Điều kiện ổn định BIBO</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Hệ Nhân quả</strong> (Causal)</td>
+            <td>Phía phải: $h[n] = 0, \; \forall n < 0$</td>
+            <td>$|z| > r_{\max}$</td>
+            <td>$r_{\max} < 1$ (mọi cực nằm bên trong đường tròn đơn vị).</td>
+          </tr>
+          <tr>
+            <td><strong>Hệ Phản nhân quả</strong> (Anti-Causal)</td>
+            <td>Phía trái: $h[n] = 0, \; \forall n \ge 0$</td>
+            <td>$|z| < r_{\min}$</td>
+            <td>$r_{\min} > 1$ (mọi cực nằm bên ngoài đường tròn đơn vị).</td>
+          </tr>
+          <tr>
+            <td><strong>Hệ Hai phía</strong> (Two-Sided)</td>
+            <td>Cả $n < 0$ và $n \ge 0$</td>
+            <td>$r_{\text{in}} < |z| < r_{\text{out}}$</td>
+            <td>$r_{\text{in}} < 1 < r_{\text{out}}$ (không có cực nằm trên $|z| = 1$).</td>
+          </tr>
+          <tr>
+            <td><strong>Hệ FIR thuần túy</strong></td>
+            <td>Hữu hạn mẫu $0 \le n \le M$</td>
+            <td>$|z| > 0$ (toàn mặt phẳng trừ $0$)</td>
+            <td><strong>Luôn ổn định BIBO</strong> do không có cực ngoài gốc tọa độ.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>2.4. Giải thích hình học đáp ứng tần số và ý nghĩa bề mặt 3D $|H(z)|$</h2>
+      <p>
+        Khi hệ thống ổn định BIBO (đường tròn đơn vị $|z|=1$ thuộc ROC), biến đổi Fourier thời gian rời rạc (DTFT) tồn tại và thu được bằng cách thay $z = e^{j\omega}$ với $\omega \in [-\pi, \pi]$ (rad/mẫu). Mối liên hệ giữa tần số góc chuẩn hóa $\omega$ và tần số vật lý $f$ (Hz) tại tốc độ lấy mẫu $f_s$ (Hz) là $\omega = 2\pi f / f_s$, trong đó $\omega = \pi$ ứng với tần số Nyquist $f_s / 2$.
+      </p>
+      <div class="math-box">
+        $$\left|H\left(e^{j\omega}\right)\right| = |K| \cdot \frac{\prod_{i=1}^{M'} \left|e^{j\omega} - z_i\right|}{\prod_{k=1}^{N'} \left|e^{j\omega} - p_k\right|} = |K| \cdot \frac{\prod_{i=1}^{M'} d_{z,i}(\omega)}{\prod_{k=1}^{N'} d_{p,k}(\omega)}$$
+        $$\angle H\left(e^{j\omega}\right) = \angle K + \sum_{i=1}^{M'} \angle\left(e^{j\omega} - z_i\right) - \sum_{k=1}^{N'} \angle\left(e^{j\omega} - p_k\right) + (N' - M' - d)\omega$$
+      </div>
+      <p>
+        Biểu thức trên mang ý nghĩa hình học cực kỳ sâu sắc: độ lớn $|e^{j\omega} - z_i| = d_{z,i}$ chính là chiều dài vector nối từ Zero $z_i$ tới điểm khảo sát $e^{j\omega}$ trên đường tròn đơn vị, còn $|e^{j\omega} - p_k| = d_{p,k}$ là chiều dài vector nối từ Cực $p_k$ tới $e^{j\omega}$.
+      </p>
+      <p>
+        Mở rộng sang không gian ba chiều, nếu xem mặt phẳng phức $Z$ là mặt đáy nằm ngang và giá trị $|H(z)|$ là độ cao thẳng đứng, ta thu được <strong>bề mặt 3D $|H(z)|$</strong> giống như một tấm màng đàn hồi: mỗi <strong>Cực</strong> đẩy mặt cong vút lên vô cực tạo đỉnh núi, còn mỗi <strong>Zero</strong> ghim mặt cong chạm sát đáy bằng $0$. Giao tuyến khi cắt thẳng đứng bề mặt 3D dọc theo trụ đơn vị $|z| = 1$ (đường màu vàng trong ứng dụng) rồi trải phẳng theo góc $\omega$ chính là đồ thị Đáp ứng Biên độ $|H(e^{j\omega})|$. Đối với hệ thống <strong>All-Pass</strong> có cặp cực $p_k = r e^{j\theta}$ và zero nghịch đảo liên hợp $z_k = r^{-1}e^{j\theta}$, tỷ lệ khoảng cách tại mọi điểm trên $|z|=1$ luôn bằng hằng số $|e^{j\omega} - r^{-1}e^{j\theta}| / |e^{j\omega} - r e^{j\theta}| = r^{-1}$, nên đường cắt $|z|=1$ phẳng tuyệt đối $0\text{ dB}$ toàn dải.
+      </p>
+
+      <h2>2.5. Đáp ứng pha, pha cực tiểu và trễ nhóm giải tích</h2>
+      <p>
+        Bên cạnh biên độ, đặc tính pha quyết định mức độ méo dạng sóng theo thời gian. <strong>Trễ nhóm (Group Delay)</strong> đo độ trễ truyền dẫn tính theo số mẫu của đường bao (envelope) tại mỗi thành phần tần số $\omega$, được định nghĩa là âm đạo hàm của pha liên tục:
+      </p>
+      <div class="math-box">
+        $$\tau_g(\omega) = -\frac{d}{d\omega}\angle H\left(e^{j\omega}\right) = \operatorname{Re}\left(\frac{B'(e^{-j\omega})}{B(e^{-j\omega})} - \frac{A'(e^{-j\omega})}{A(e^{-j\omega})}\right)$$
+      </div>
+      <p>
+        Trong đó $B'(e^{-j\omega}) = \sum_{m=1}^{M} m b_m e^{-jm\omega}$ và $A'(e^{-j\omega}) = \sum_{k=1}^{N} k a_k e^{-jk\omega}$. Cách tính giải tích này hoàn toàn miễn nhiễm với sai số sai phân số khi gặp bước nhảy pha $\pm\pi$ tại các Zero nằm trên đường tròn đơn vị. Một hệ thống LTI nhân quả, ổn định được gọi là <strong>Pha cực tiểu (Minimum-Phase)</strong> khi cả toàn bộ cực và toàn bộ zero hữu hạn đều nằm nghiêm ngặt bên trong đường tròn đơn vị ($|p_k| < 1$ và $|z_i| < 1$), đảm bảo trễ nhóm nhỏ nhất và hệ thống nghịch đảo $H^{-1}(z)$ cũng nhân quả, ổn định.
+      </p>
+
+      <h2>2.6. Khái quát hóa mạch điện tương đương miền $s$ (Bilinear Transform)</h2>
+      <p>
+        Trong kỹ thuật điện tử – viễn thông, các bộ lọc số IIR thường được thiết kế xuất phát từ các nguyên mẫu mạch lọc tương tự ($R, L, C$, Op-Amp) thông qua phép biến đổi song tuyến (Bilinear Transform) ánh xạ nửa trái mặt phẳng $s$ vào bên trong đường tròn đơn vị mặt phẳng $z$:
+      </p>
+      <div class="math-box">
+        $$s = \frac{2}{T_s} \cdot \frac{1 - z^{-1}}{1 + z^{-1}} \quad \Longleftrightarrow \quad z = \frac{1 + \frac{T_s}{2} s}{1 - \frac{T_s}{2} s}$$
+      </div>
+      <p>
+        Phép ánh xạ bảo toàn tính ổn định ($\operatorname{Re}(s_k) < 0 \iff |p_k| < 1$), ánh xạ trục ảo $j\Omega$ lên đường tròn đơn vị $|z|=1$ và cho phép liên hệ trực tiếp từng lớp bộ lọc số với mạch điện vật lý tương ứng (Bảng 2.2).
+      </p>
+
+      <div class="table-caption">Bảng 2.2: Ánh xạ giữa phân loại bộ lọc LTI số và mạch điện tương đương miền $s$</div>
+      <table class="acad-table">
+        <thead>
+          <tr>
+            <th style="width: 24%;">Phân loại hệ thống LTI</th>
+            <th style="width: 34%;">Mạch điện tương đương (Analog / DSP)</th>
+            <th style="width: 42%;">Công thức hàm truyền khái quát</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Thông thấp bậc 1</strong></td>
+            <td>Mạch RC nối tiếp (ngõ ra trên tụ $C$)</td>
+            <td>$H(s) = \frac{1}{1+sRC}, \; f_c = \frac{1}{2\pi RC}$</td>
+          </tr>
+          <tr>
+            <td><strong>Thông thấp bậc $\ge 2$</strong></td>
+            <td>Mạch RLC (lấy áp trên $C$) / Sallen-Key Low-pass</td>
+            <td>$H(s) = \frac{\omega_0^2}{s^2 + \frac{\omega_0}{Q}s + \omega_0^2}, \; f_0 = \frac{1}{2\pi\sqrt{LC}}$</td>
+          </tr>
+          <tr>
+            <td><strong>Thông cao bậc 1 / $\ge 2$</strong></td>
+            <td>Mạch CR (lấy áp trên $R$) / RLC (lấy áp trên $L$)</td>
+            <td>$H(s) = \frac{sRC}{1+sRC}$ hoặc $\frac{s^2}{s^2 + \frac{\omega_0}{Q}s + \omega_0^2}$</td>
+          </tr>
+          <tr>
+            <td><strong>Thông dải / Cộng hưởng</strong></td>
+            <td>Mạch cộng hưởng RLC nối tiếp (lấy áp trên $R$)</td>
+            <td>$H(s) = \frac{\frac{\omega_0}{Q}s}{s^2 + \frac{\omega_0}{Q}s + \omega_0^2}, \; Q = \frac{1}{R}\sqrt{\frac{L}{C}}$</td>
+          </tr>
+          <tr>
+            <td><strong>Chắn dải / Notch 50Hz</strong></td>
+            <td>Mạch cầu Twin-T Notch (RC) / Bẫy LC song song</td>
+            <td>$H(s) = \frac{s^2 + \omega_N^2}{s^2 + \frac{\omega_N}{Q}s + \omega_N^2}, \; f_N = \frac{1}{2\pi RC}$</td>
+          </tr>
+          <tr>
+            <td><strong>All-Pass (Cân bằng pha)</strong></td>
+            <td>Mạch cầu Lattice / Op-Amp dịch pha chủ động</td>
+            <td>$H(s) = \frac{s^2 - \frac{\omega_0}{Q}s + \omega_0^2}{s^2 + \frac{\omega_0}{Q}s + \omega_0^2}, \; |H(j\omega)|=1$</td>
+          </tr>
+          <tr>
+            <td><strong>FIR / Răng lược (Comb)</strong></td>
+            <td>Mạch dây trễ FIR (Tapped Delay Line $z^{-1}$)</td>
+            <td>$H(z) = \sum_{m=0}^{M} b_m z^{-m}$ (không có hồi tiếp)</td>
+          </tr>
+          <tr>
+            <td><strong>Biên giới ổn định</strong> ($|p|=1$)</td>
+            <td>Mạch tích phân Op-Amp ($p=1$) hoặc LC lý tưởng ($R=0$)</td>
+            <td>$H(s) = \frac{1}{sRC}$ hoặc $H(s) = \frac{\omega_0}{s^2 + \omega_0^2}$</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== CHƯƠNG 3 ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 3: KIẾN TRÚC PHẦN MỀM VÀ GIẢI THUẬT CỐT LÕI</h1>
+
+      <h2>3.1. Kiến trúc tách module và cơ chế vận hành 100% Offline</h2>
+      <p>
+        Hệ thống được tổ chức theo mô hình <strong>3 tầng tách biệt rõ trách nhiệm (Separation of Concerns)</strong> hoàn toàn bằng JavaScript thuần ES6+, HTML5 Canvas và CSS Variables, không phụ thuộc bất kỳ máy chủ backend hay kết nối mạng ngoài nào:
+      </p>
+      <ul>
+        <li><strong>Tầng Toán học &amp; Giải thuật DSP (<code>js/dsp.js</code>):</strong> Quản lý lớp số phức <code>Complex</code>, bộ phân tích đại số hữu tỷ <code>LaurentPoly</code>/<code>RatFunc</code>, bộ giải nghiệm <code>findPolynomialRoots()</code>, bộ khai triển PFE cực đơn/cực bội <code>buildAnalyticalHnLatex()</code>, bộ tính phổ/trễ nhóm giải tích <code>evaluateFrequencyResponse()</code>, bộ giải miền thời gian <code>computeTimeDomainResponse()</code> và bộ phân định + ánh xạ mạch điện <code>buildSystemExplanation()</code>.</li>
+        <li><strong>Tầng Kết xuất Đồ họa HiDPI 60 FPS (<code>js/charts.js</code>):</strong> Quản lý hệ token màu Sáng/Tối <code>getChartTheme()</code>, bộ vẽ mặt phẳng 2D $Z$ với thuật toán tránh chồng nhãn <code>placeNonOverlappingBadge()</code>, bộ chiếu bề mặt 3D $|H(z)|$ (<code>draw3DZSurfaceCanvas()</code>), đồ thị Biên độ/Pha/Trễ nhóm và đồ thị Miền thời gian.</li>
+        <li><strong>Tầng Điều phối Trạng thái &amp; Tương tác (<code>js/app.js</code>, <code>index.html</code>, <code>css/styles.css</code>):</strong> Đồng bộ hai chiều giữa ô nhập $H(z)$, bảng tọa độ nghiệm chỉnh sửa trực tiếp, thanh trượt &amp; nút Quét tự động $\omega_0$, Pointer Events (chuột + cảm ứng), Zoom, Snap $|z|=1$, Undo/Redo (<code>Ctrl+Z</code>/<code>Ctrl+Y</code>) và 12 sơ đồ mạch SVG (<code>CIRCUIT_SVGS</code>).</li>
+        <li><strong>Tầng Thư viện Cục bộ (<code>vendor/</code>, <code>assets/</code>):</strong> Đóng gói sẵn <code>vendor/tailwind.min.js</code>, <code>vendor/katex/</code> kèm toàn bộ 20 tệp font <code>.woff2</code> và logo <code>assets/bk-logo.png</code>. Ngoài ra, bản <code>LTI_Pole_Zero_SingleFile.html</code> nhúng mã hóa Base64 toàn bộ font và logo vào duy nhất 1 tệp HTML để chạy offline tuyệt đối.</li>
+      </ul>
+
+      <div class="table-caption">Bảng 3.1: Cấu trúc thư mục mã nguồn và các gói phát hành của dự án</div>
+      <table class="acad-table">
+        <thead>
+          <tr>
+            <th style="width: 30%;">Tệp / Thư mục</th>
+            <th style="width: 18%;">Vai trò</th>
+            <th style="width: 52%;">Mô tả chức năng chính</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>index.html</code></td>
+            <td>Giao diện chính</td>
+            <td>Bố cục Precision Studio (Above-the-fold Z-Plane + 4 Panel đồ thị &amp; mạch điện + Bento công thức LaTeX).</td>
+          </tr>
+          <tr>
+            <td><code>css/styles.css</code></td>
+            <td>Design System</td>
+            <td>Hệ biến CSS Dual-Theme (Obsidian Dark &amp; Sáng Bách Khoa), nền lưới Blueprint, <code>@media print</code>.</td>
+          </tr>
+          <tr>
+            <td><code>js/dsp.js</code></td>
+            <td>Lõi Toán học DSP</td>
+            <td>Laurent Parser, Aberth-Ehrlich, PFE cực đơn/cực bội, Trễ nhóm giải tích, Phân định &amp; Mạch điện.</td>
+          </tr>
+          <tr>
+            <td><code>js/charts.js</code></td>
+            <td>Đồ họa Canvas</td>
+            <td>HiDPI 2D Z-Plane, 3D $|H(z)|$ Painter's Algorithm, Biên độ ($-3\text{ dB}$), Pha Wrapped/Unwrapped, $h[n]/s[n]/y[n]$.</td>
+          </tr>
+          <tr>
+            <td><code>js/app.js</code></td>
+            <td>Điều phối &amp; UX</td>
+            <td>Pointer/Touch, Auto-Sweep $\omega_0$, Undo/Redo, Sửa tọa độ nội tuyến, 12 sơ đồ SVG <code>CIRCUIT_SVGS</code>.</td>
+          </tr>
+          <tr>
+            <td><code>vendor/</code> &amp; <code>assets/</code></td>
+            <td>Tài nguyên Offline</td>
+            <td>Tailwind CSS, KaTeX JS/CSS + 20 font <code>.woff2</code>, logo <code>bk-logo.png</code> đã căn tỷ lệ 1:1.</td>
+          </tr>
+          <tr>
+            <td><code>LTI_Pole_Zero_SingleFile.html</code></td>
+            <td>Bản đơn độc lập</td>
+            <td>Đóng gói 100% mã nguồn, font Base64 &amp; logo vào duy nhất 1 tệp HTML (~1.3 MB, 0 request mạng).</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h2>3.2. Bộ phân tích biểu thức đại số Laurent hữu tỷ $H(z)$</h2>
+      <p>
+        Một bài toán quan trọng khi cho phép người dùng nhập tự do biểu thức $H(z)$ (ví dụ <code>1/2 * (1 - z^-1)/(1 - 0.8*z^-1)</code>, <code>0.25 / (1 - 0.5*z^-1)^2</code> hoặc <code>(z^2 - 1)/(z^2 - 1.2*z + 0.75)</code>) là trích xuất chính xác mảng hệ số $\{b_m\}, \{a_k\}$ mà không bị sai số làm tròn hay giới hạn bậc. Thay vì dùng nội suy DFT trên đường tròn đơn vị (vốn dễ gặp chồng phổ aliasing khi bậc đa thức lớn hơn $L/2$ và hỏng cú pháp khi gặp nhiều dấu chia <code>/</code> lồng nhau), hệ thống cài đặt bộ phân tích đệ quy (Recursive-Descent Parser) thao tác trực tiếp trên cấu trúc đại số <strong>Đa thức Laurent</strong> (<code>LaurentPoly</code>: ánh xạ số mũ nguyên $p \in \mathbb{Z} \mapsto c_p \in \mathbb{C}$) và <strong>Phân thức hữu tỷ</strong> (<code>RatFunc</code>: cặp tử/mẫu $\{N(z), D(z)\}$):
+      </p>
+      <pre class="code-block">// Phép toán đại số chính xác trên phân thức hữu tỷ Laurent
+RatFunc.add(A, B) = { num: A.num * B.den + B.num * A.den, den: A.den * B.den }
+RatFunc.mul(A, B) = { num: A.num * B.num,                 den: A.den * B.den }
+RatFunc.div(A, B) = { num: A.num * B.den,                 den: A.den * B.num }
+RatFunc.pow(A, n) = (n >= 0) ? { num^n, den^n } : { den^(-n), num^(-n) }</pre>
+      <p>
+        Bộ tách từ vựng (Tokenizer) tự động chèn phép nhân ẩn (như <code>2z</code>, <code>)(</code>, <code>2(1-z^-1)</code>), hỗ trợ ký hiệu khoa học (<code>1e-3</code>), hằng số <code>pi</code> và tự động dịch chuyển số mũ cao nhất $P_{\max}$ về dạng chuẩn theo $z^{-m}$ đồng thời bảo toàn chính xác bậc trễ thuần túy $d$ (số hệ số 0 dẫn đầu ở tử số).
+      </p>
+
+      <h2>3.3. Giải thuật tìm nghiệm đa thức Aberth-Ehrlich và gom cụm cực bội</h2>
+      <p>
+        Để chuyển đổi từ dạng đa thức sang vị trí các Cực và Zero trên mặt phẳng phức, hệ thống giải trực tiếp bằng công thức nghiệm chính xác cho bậc 1 và bậc 2 (xử lý tuyệt đối chính xác nghiệm kép bậc 2), và sử dụng phương pháp lặp đồng thời <strong>Aberth-Ehrlich</strong> hội tụ bậc ba cho đa thức bậc $n \ge 3$:
+      </p>
+      <div class="math-box">
+        $$z_k^{(m+1)} = z_k^{(m)} - \frac{P\left(z_k^{(m)}\right) / P'\left(z_k^{(m)}\right)}{1 - \dfrac{P\left(z_k^{(m)}\right)}{P'\left(z_k^{(m)}\right)} \sum_{j \neq k} \dfrac{1}{z_k^{(m)} - z_j^{(m)}}}$$
+      </div>
+      <p>
+        Giá trị $P(z_k)$ và đạo hàm $P'(z_k)$ được tính đồng thời chỉ trong một vòng lặp sơ đồ Horner với độ phức tạp $O(n)$. Các điểm khởi tạo nằm trên vòng tròn bán kính Cauchy với góc lệch bất đối xứng $+0.3719\text{ rad}$ nhằm loại bỏ bẫy đối xứng. Sau khi hội tụ ($\max|\Delta z_k| < 10^{-12}$), bước hậu xử lý <strong>gom cụm nghiệm bội</strong> sẽ hợp nhất các nghiệm cách nhau nhỏ hơn $4 \times 10^{-3}$ về tâm cụm, giúp các đa thức có nghiệm bội cao như $(1 - 0.5z^{-1})^3$ hội tụ sạch sẽ về đúng $p_{1,2,3} = 0.5$.
+      </p>
+
+      <h2>3.4. Khai triển phân thức tối giản (PFE) cho cả cực đơn và cực bội</h2>
+      <p>
+        Khác với nhiều công cụ chỉ xử lý được cực đơn (simple poles) và phải bỏ cuộc khi gặp cực bội, hàm <code>buildAnalyticalHnLatex()</code> trong <code>js/dsp.js</code> triển khai giải thuật PFE tổng quát gồm 3 bước:
+      </p>
+      <ol>
+        <li><strong>Chia đa thức bậc cao:</strong> Khi $\deg(B) \ge \deg(A)$ theo $z^{-1}$, thực hiện phép chia đa thức tách ra phần FIR gồm các xung $\sum q_m \delta[n - m]$ và phần dư thực sự $R(z^{-1})$ thỏa $\deg(R) < \deg(A)$.</li>
+        <li><strong>Số học chuỗi lũy thừa cắt cụt quanh cực bội $M$:</strong> Với mỗi cụm cực $p_k$ có bội số $M$, đặt phép thế $w = 1 - p_k z^{-1} \iff z^{-1} = p_k^{-1}(1 - w)$. Khi đó:
+          <div class="math-box">
+            $$\frac{R(z^{-1})}{A(z^{-1})} = \frac{1}{w^M} \cdot \frac{R\left(p_k^{-1}(1-w)\right)}{a_0 \prod_{j \neq k} \left(1 - p_j p_k^{-1}(1-w)\right)^{m_j}} = \sum_{s=1}^{M} \frac{C_{k, s}}{(1 - p_k z^{-1})^s} + \mathcal{O}(1)$$
+          </div>
+          Bằng phép cộng, nhân và chia chuỗi lũy thừa cắt cụt modulo $w^M$ (<code>psAdd</code>, <code>psMul</code>, <code>psDiv</code>), toàn bộ các hệ số thặng dư $C_{k,1}, \dots, C_{k,M}$ được tính chính xác trong thời gian $O(M^2)$.
+        </li>
+        <li><strong>Biến đổi $Z$ ngược theo ROC và gom cặp liên hợp:</strong> Mỗi thành phần bậc $s$ được biến đổi ngược theo đúng chế độ ROC (nhân quả $u[n]$ hay phản nhân quả $-u[-n-1]$) sử dụng hệ số nhị thức $\binom{n+s-1}{s-1}$:
+          <div class="math-box">
+            $$\frac{C_{k,s}}{(1 - p_k z^{-1})^s} \xleftrightarrow{\text{Causal}} C_{k,s}\binom{n+s-1}{s-1} p_k^n u[n]$$
+          </div>
+          Các cặp cực phức liên hợp $p, p^*$ được tự động gộp thành dạng dao động điều hòa thực $2|C_{k,s}| \binom{n+s-1}{s-1} r^n \cos(\omega_0 n + \angle C_{k,s}) u[n]$ và xuất trực tiếp ra công thức KaTeX.
+        </li>
+      </ol>
+
+      <h2>3.5. Bộ giải miền thời gian cho cả 3 chế độ ROC</h2>
+      <p>
+        Hàm <code>computeTimeDomainResponse()</code> xử lý đồng nhất cho 3 chế độ đầu vào ($h[n]$, nhảy bậc $s[n]$, và lọc tín hiệu $x[n]$ gồm 4 dạng sóng tùy chọn: Tổng 2 hình sin $\omega_1 + \omega_2$, Sin + Nhiễu cao tần, Sóng vuông và Chirp quét tần số $0 \to \pi$):
+      </p>
+      <ul>
+        <li><strong>Nhân quả (hoặc hai phía có $r_{\max} < 1$):</strong> Giải đệ quy trực tiếp phương trình sai phân xuôi từ $n = 0 \to N-1$, kèm cơ chế kẹp chống tràn số ở $\pm 10^5$ để vẫn quan sát được tốc độ phân kỳ hàm mũ khi hệ bất ổn định.</li>
+        <li><strong>Ổn định Phản nhân quả / Hai phía:</strong> Tính đáp ứng xung $h[k]$ qua IDFT độ phân giải cao ($N_{\text{FFT}} = 1024$) trên vòng tròn đơn vị và tính tích chập rời rạc $y[n] = \sum_{k=-256}^{256} h[k] x[n-k]$ cho cả $s[n]$ và $x[n]$.</li>
+        <li><strong>Bất ổn định Phản nhân quả:</strong> Giải đệ quy ngược từ $n = 0$ lùi về $-(N-1)$ theo hệ số $a_N$ cuối cùng của mẫu số.</li>
+      </ul>
+
+      <h2>3.6. Kiến trúc đồ họa HiDPI Canvas 2D/3D và thuật toán chống chồng nhãn</h2>
+      <p>
+        Tất cả 4 đồ thị Canvas đều tự động nhân ma trận biến đổi theo <code>window.devicePixelRatio</code> giúp nét vẽ sắc nét trên màn hình Retina/4K và máy chiếu lớp học. Trên mặt phẳng 2D $Z$, thuật toán <code>placeNonOverlappingBadge()</code> đăng ký trước vùng chiếm chỗ của điểm khảo sát $e^{j\omega_0}$, các dấu $\times, \circ$ và tự động quét theo quỹ đạo xoắn ốc 12 góc $\times$ 4 bán kính để đặt nhãn tọa độ $(p_k, z_i)$, độ dài vector $(d_z, d_p)$ và nhãn biên ROC hoàn toàn không đè lên nhau. Trên góc nhìn 3D $|H(z)|$, bề mặt được lấy mẫu lưới $30 \times 30$, chiếu phối cảnh theo góc xoay chuột $(\text{yaw}, \text{pitch})$ và sắp xếp mặt tứ giác theo chiều sâu (Painter's Algorithm), làm nổi bật đường cắt vàng $|H(e^{j\omega})|$ dọc theo trụ $|z|=1$.
+      </p>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== CHƯƠNG 4 ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 4: THIẾT KẾ GIAO DIỆN PRECISION STUDIO VÀ TRỰC QUAN HÓA</h1>
+
+      <h2>4.1. Triết lý thiết kế giao diện kỹ thuật và chuẩn tương phản WCAG</h2>
+      <p>
+        Giao diện ứng dụng được thiết kế theo triết lý <strong>Precision Studio</strong> (lấy cảm hứng từ các công cụ kỹ thuật hiện đại như Desmos, MATLAB Online và máy hiện sóng số), khắc phục hoàn toàn nhược điểm "nhiều khung lồng khung, phải cuộn chuột mới thấy đồ thị" của các ứng dụng học tập truyền thống:
+      </p>
+      <ul>
+        <li><strong>Không gian làm việc Above-the-fold:</strong> Ngay khi mở trình duyệt ở độ phân giải tiêu chuẩn $1440 \times 900$, toàn bộ thanh Header một hàng (gắn logo lục giác <strong>BK TP.HCM</strong> tỷ lệ 1:1), thanh nhập công thức $H(z)$, Mặt phẳng phức $Z$ kèm nút <strong>Quét tự động $\omega_0$</strong>, 4 thẻ chỉ số KPI và 3 đồ thị Biên độ / Pha / Miền thời gian đều hiển thị trọn vẹn trong cùng một khung hình.</li>
+        <li><strong>Hệ thống Icon SVG thống nhất &amp; Dual-Theme chuẩn WCAG ($\ge 4.5:1$):</strong> Loại bỏ hoàn toàn emoji làm icon giao diện, thay bằng bộ icon SVG đường nét mảnh đồng bộ; hỗ trợ chuyển đổi tức thì giữa <strong>Chế độ Tối (Obsidian Lab)</strong> dịu mắt khi làm việc lâu và <strong>Chế độ Sáng Bách Khoa</strong> độ tương phản cao khi trình chiếu trên máy chiếu hội trường.</li>
+        <li><strong>Sân khấu Sơ đồ Mạch điện Blueprint:</strong> Thiết kế ngang hàng với 3 đồ thị chính, kết hợp lưới chấm kỹ thuật, sơ đồ SVG sắc nét tự động biến đổi theo 12 cấu trúc mạch và công thức $H(s)$ dạng Display-Mode.</li>
+        <li><strong>Tương tác đa nền tảng &amp; In ấn báo cáo:</strong> Sử dụng chuẩn Pointer Events hỗ trợ cả chuột lẫn màn hình cảm ứng, cuộn chuột phóng to/thu nhỏ, giữ <code>Shift</code> bắt dính lên $|z|=1$, phím tắt <code>Ctrl+Z</code>/<code>Ctrl+Y</code>, responsive không tràn ngang ở <code>390px</code> và định dạng <code>@media print</code> xuất PDF nền trắng sạch đẹp.</li>
+      </ul>
+
+      <h2>4.2. Trực quan hóa giao diện thực tế của ứng dụng</h2>
+      <p>
+        Các hình 4.1 đến 4.4 minh họa trực tiếp giao diện vận hành thực tế của <strong>LTI Pole-Zero Studio</strong> trên trình duyệt ở nhiều chế độ khác nhau.
+      </p>
+
+      <div class="fig-block">
+        <img src="assets/report/fig1_dark_studio.png" alt="Giao diện Dark Mode Precision Studio - Bộ cộng hưởng Band-pass" />
+        <div class="fig-caption">Hình 4.1: Giao diện chính Chế độ Tối (Obsidian Precision Studio) với Bộ cộng hưởng thông dải (Band-pass Resonator), Mặt phẳng Z chống chồng nhãn và 3 đồ thị thời gian thực.</div>
+      </div>
+
+      <div class="fig-block">
+        <img src="assets/report/fig2_light_notch.png" alt="Giao diện Light Mode Sáng Bách Khoa - Bộ lọc Notch 50Hz" />
+        <div class="fig-caption">Hình 4.2: Giao diện Chế độ Sáng Bách Khoa (Light Mode) phân tích Bộ lọc chắn dải Notch 50Hz tại $f_s = 300\text{ Hz}$ ($\omega_0 = 0.33\pi \iff f = 50.0\text{ Hz}$, suy hao $-120\text{ dB}$).</div>
+      </div>
+
+      <div class="page-break"></div>
+
+      <div class="fig-block">
+        <img src="assets/report/fig3_3d_surface.png" alt="Mặt cong 3D |H(z)| và đường cắt đơn vị |z|=1" />
+        <div class="fig-caption">Hình 4.3: Chế độ Mặt cong 3D $|H(z)|$ xoay tự do — minh họa đỉnh cực đẩy bề mặt vút lên, Zero kéo mặt cong chạm đáy và đường cắt vàng $|z|=1$ tạo nên phổ biên độ $|H(e^{j\omega})|$.</div>
+      </div>
+
+      <div class="fig-block">
+        <img src="assets/report/fig4_circuit_blueprint.png" alt="Sơ đồ Mạch điện Tương đương & Công thức khái quát miền s" />
+        <div class="fig-caption">Hình 4.4: Panel Sơ đồ Mạch điện Tương đương (Mạch cộng hưởng RLC nối tiếp) &amp; Công thức khái quát miền $s$, tự động thay đổi theo 12 loại mạch khi thay đổi $H(z)$ hoặc kéo thả nghiệm.</div>
+      </div>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== CHƯƠNG 5 ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 5: KIỂM THỬ TOÁN HỌC, THỰC NGHIỆM VÀ ĐÁNH GIÁ HIỆU NĂNG</h1>
+
+      <h2>5.1. Kiểm chứng tự động 15 kịch bản hệ thống LTI chuẩn</h2>
+      <p>
+        Để đảm bảo độ tin cậy tuyệt đối về mặt toán học trước khi bàn giao, nhóm đã xây dựng kịch bản kiểm thử tự động trên Node.js kiểm tra toàn bộ chuỗi xử lý của <code>js/dsp.js</code> (Parser Laurent $\to$ Tìm nghiệm Aberth-Ehrlich $\to$ Giải tích PFE $h[n]$ $\to$ Đáp ứng tần số &amp; Trễ nhóm $\to$ Miền thời gian $h[n]/y[n]$ $\to$ Tự động phân định loại bộ lọc &amp; Mạch điện tương đương) qua <strong>15 trường hợp tiêu biểu</strong> (Bảng 5.1). Kết quả đạt <strong>15/15 PASS (0 lỗi NaN, 0 sai phân loại)</strong>.
+      </p>
+
+      <div class="table-caption">Bảng 5.1: Kết quả kiểm thử toán học tự động 15 kịch bản hệ thống LTI trên js/dsp.js</div>
+      <table class="acad-table" style="font-size: 10.3pt;">
+        <thead>
+          <tr>
+            <th style="width: 5%;">#</th>
+            <th style="width: 17%;">Kịch bản</th>
+            <th style="width: 28%;">Hàm truyền $H(z)$ &amp; ROC</th>
+            <th style="width: 26%;">Phân loại tự động</th>
+            <th style="width: 16%;">Mạch tương đương</th>
+            <th style="width: 8%;">KQ</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td style="text-align:center;">1</td><td>Resonator</td><td><code>0.19(1-z^-2)/(1-1.2728z^-1+0.81z^-2)</code> (Causal)</td><td>IIR Thông dải • Ổn định BIBO</td><td>RLC Band-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">2</td><td>Notch 50Hz</td><td><code>0.93(1-z^-1+z^-2)/(1-0.92z^-1+0.8464z^-2)</code></td><td>IIR Chắn dải • Ổn định BIBO</td><td>Twin-T Notch</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">3</td><td>Low-pass bậc 1</td><td><code>0.15 / (1 - 0.85*z^-1)</code></td><td>IIR Thông thấp • Ổn định BIBO</td><td>RC Low-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">4</td><td>Low-pass bậc 2</td><td><code>0.0976(1+2z^-1+z^-2)/(1-1.1085z^-1+0.4096z^-2)</code></td><td>IIR Thông thấp • Ổn định BIBO</td><td>RLC / Sallen-Key</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">5</td><td>High-pass FIR</td><td><code>0.5 * (1 - z^-1)</code></td><td>FIR Thông cao • Ổn định BIBO</td><td>FIR Delay Line</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">6</td><td>High-pass bậc 2</td><td><code>0.25(1-2z^-1+z^-2)/(1+0.9192z^-1+0.4225z^-2)</code></td><td>IIR Thông cao • Ổn định BIBO</td><td>RLC High-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">7</td><td>Moving Average</td><td><code>0.25 * (1 + z^-1 + z^-2 + z^-3)</code></td><td>FIR Thông thấp • Ổn định BIBO</td><td>FIR Delay Line</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">8</td><td>Comb Filter</td><td><code>0.5 * (1 - z^-4)</code></td><td>FIR Răng lược • Ổn định BIBO</td><td>FIR Delay Line</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">9</td><td>All-Pass</td><td><code>(0.64-0.8z^-1+z^-2)/(1-0.8z^-1+0.64z^-2)</code></td><td>All-Pass • Ổn định BIBO</td><td>Lattice All-Pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">10</td><td>Cực bội bậc 2</td><td><code>0.25 / (1 - 0.5*z^-1)^2</code></td><td>IIR Thông thấp • Ổn định BIBO</td><td>RLC Low-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">11</td><td>Tích lũy (Integrator)</td><td><code>1 / (1 - z^-1)</code></td><td>IIR Thông thấp • Biên giới ổn định</td><td>Op-Amp Integrator</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">12</td><td>Dao động LC</td><td><code>1 / (1 - 1.4142*z^-1 + z^-2)</code></td><td>IIR Thông dải • Biên giới ổn định</td><td>LC lý tưởng ($R=0$)</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">13</td><td>Bất ổn định (Causal)</td><td><code>0.5 / (1 - 1.7313*z^-1 + 1.1449*z^-2)</code></td><td>IIR Thông dải • Không ổn định</td><td>Hồi tiếp dương</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">14</td><td>Phản nhân quả ổn định</td><td><code>0.5 / (1 - 1.7313*z^-1 + 1.1449*z^-2)</code> (Anti)</td><td>IIR Thông dải • Ổn định BIBO</td><td>RLC Band-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+          <tr><td style="text-align:center;">15</td><td>Khâu trễ thuần túy</td><td><code>z^-1 / (1 - 0.8*z^-1)</code></td><td>IIR Thông thấp • Ổn định BIBO</td><td>RC Low-pass</td><td style="text-align:center;color:#059669;font-weight:bold;">PASS</td></tr>
+        </tbody>
+      </table>
+
+      <h2>5.2. Phân tích 4 bài thực hành khám phá điển hình trên Web App</h2>
+      <h3>Thí nghiệm 1: Quan hệ giữa bán kính cực $r$ và băng thông $-3\text{ dB}$ (Resonator)</h3>
+      <p>
+        Nạp bộ lọc <strong>Cộng hưởng thông dải</strong> với cặp cực $p_{1,2} = 0.9 e^{\pm j\pi/4}$ và hai Zero tại $z = \pm 1$. Ứng dụng xuất chính xác đáp ứng xung giải tích $h[n] = -0.235\delta[n] + 0.427(0.9)^n \cos(0.25\pi n + 6^\circ) u[n]$ và đo được băng thông $\text{BW}_{-3\text{dB}} \approx 0.07\pi\text{ rad}$ ($10.0\text{ Hz}$ tại $f_s = 300\text{ Hz}$), khớp sát công thức lý thuyết $\Delta\omega \approx 2(1 - 0.9) = 0.2\text{ rad} \approx 0.064\pi$. Khi người dùng kéo cực tiến ra $r = 0.96$, đỉnh cộng hưởng tăng vọt, băng thông thu hẹp rõ rệt và dao động $h[n]$ duy trì kéo dài hơn hẳn.
+      </p>
+
+      <h3>Thí nghiệm 2: Khử nhiễu lưới điện 50Hz bằng Notch Filter &amp; Lọc tín hiệu $x[n]$</h3>
+      <p>
+        Chọn <strong>Notch 50Hz</strong> ($f_s = 300\text{ Hz}$), cặp Zero nằm chính xác trên đường tròn đơn vị tại $e^{\pm j\pi/3}$ tương ứng $f_N = \frac{\pi/3}{2\pi} \cdot 300 = 50.0\text{ Hz}$, làm vector $d_{z1} = 0 \implies |H(e^{j\pi/3})| = 0$ ($-\infty\text{ dB}$). Khi chuyển Panel 3 sang tab <strong>Lọc $x[n]$</strong> với đầu vào hai hình sin $\omega_1 = 0.12\pi$ ($18\text{ Hz}$, tín hiệu hữu ích) và $\omega_2 = 0.33\pi$ ($50\text{ Hz}$, nhiễu nguồn), đồ thị đầu ra $y[n]$ giữ nguyên hình sin $18\text{ Hz}$ sạch đẹp và triệt tiêu hoàn toàn thành phần nhiễu $50\text{ Hz}$.
+      </p>
+
+      <h3>Thí nghiệm 3: Cực bội bậc 2 và kiểm chứng PFE tổng quát</h3>
+      <p>
+        Khi nhập hàm truyền tới hạn <code>0.25 / (1 - 0.5*z^-1)^2</code>, thuật toán Aberth-Ehrlich + giải tích bậc 2 xác định chính xác cực kép $p_1 = p_2 = 0.500$, đồng thời bộ khai triển PFE chuỗi lũy thừa xuất công thức đóng chính xác $h[n] = 0.25(n+1)(0.5)^n u[n]$. Đồ thị $h[n]$ xác nhận giá trị mẫu tăng từ $h[0] = 0.25$ lên đỉnh $h[1] = 0.25$ rồi tắt dần mượt mà không dao động.
+      </p>
+
+      <h3>Thí nghiệm 4: Chuyển đổi Miền hội tụ (ROC) và tính ổn định BIBO</h3>
+      <p>
+        Với hệ thống có cặp cực nằm ngoài đường tròn đơn vị $p_{1,2} = 1.07 e^{\pm j\pi/5}$, dưới chế độ ROC <strong>Nhân quả</strong> ($|z| > 1.07$), đường tròn đơn vị nằm ngoài ROC nên hệ thống bất ổn định và $h[n]$ phân kỳ mạnh. Chỉ cần đổi danh sách chọn ROC sang <strong>Phản nhân quả</strong> ($|z| < 1.07$), miền màu đỏ trên mặt phẳng $Z$ lập tức lấp đầy bên trong $|z| < 1.07$ chứa trọn $|z|=1$, trạng thái chuyển sang <strong>Ổn định BIBO</strong> và $h[n]$ lật sang miền $n \le 0$ hội tụ về $0$.
+      </p>
+
+      <h2>5.3. Đánh giá hiệu năng thời gian thực và độ ổn định trình duyệt</h2>
+      <p>
+        Quá trình kiểm thử tự động trên Google Chrome Headless cho thấy thời gian tính toán và kết xuất toàn bộ 4 Canvas (512 điểm phổ + 64 mẫu thời gian + 2D Z-Plane / 3D lưới $30 \times 30$) trung bình chỉ từ <strong>4 ms đến 12 ms/khung hình</strong>, đảm bảo tốc độ tương tác mượt mà <strong>60 FPS</strong> khi kéo thả nghiệm hoặc chạy chế độ <strong>Quét tự động $\omega_0$</strong>. Toàn bộ kiểm thử trên cả <code>index.html</code> (qua HTTP cục bộ) lẫn <code>LTI_Pole_Zero_SingleFile.html</code> (mở trực tiếp qua <code>file://</code>) ghi nhận: <strong>0 lỗi JavaScript Console</strong>, <strong>0 lỗi phân tích KaTeX</strong>, <strong>0 mã lỗi HTTP $\ge 400$</strong>, <strong>0 yêu cầu mạng ra ngoài internet</strong> và không tràn ngang trên màn hình di động <code>390px</code>.
+      </p>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- ==================== CHƯƠNG 6 & TÀI LIỆU THAM KHẢO ==================== -->
+    <section>
+      <h1 class="chapter-title">CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN</h1>
+
+      <h2>6.1. Tổng kết kết quả đạt được</h2>
+      <p>
+        Sau quá trình nghiên cứu lý thuyết, thiết kế kiến trúc, cài đặt giải thuật và kiểm thử nghiêm ngặt, nhóm đã hoàn thành trọn vẹn <strong>Đề tài 13: Web App Tương tác Phân tích Biểu đồ Pole-Zero và Đáp ứng Tần số Hệ LTI</strong> với các kết quả nổi bật sau:
+      </p>
+      <ol>
+        <li><strong>Hoàn thiện lõi toán học DSP chuẩn xác:</strong> Xây dựng thành công bộ phân tích đại số hữu tỷ Laurent, bộ tìm nghiệm Aberth-Ehrlich xử lý nghiệm bội, bộ biến đổi $Z$ ngược PFE cho cả cực đơn và cực bội, tính trễ nhóm giải tích chính xác và mô phỏng miền thời gian cho đủ 3 chế độ ROC.</li>
+        <li><strong>Trực quan hóa đa chiều 2D, 3D và Mạch điện tương đương:</strong> Không chỉ dừng ở biểu đồ 2D cơ bản, công cụ bổ sung góc nhìn bề mặt 3D $|H(z)|$ xoay tự do, chế độ Quét tự động $\omega_0$, quy đổi tần số vật lý $f$ (Hz), tự động phân định loại bộ lọc/ứng dụng thực tế và hiển thị trực quan <strong>12 sơ đồ mạch điện SVG tương đương kèm công thức khái quát miền $s$</strong>.</li>
+        <li><strong>Giao diện Precision Studio &amp; Vận hành 100% Offline:</strong> Tối ưu hóa trải nghiệm người dùng theo chuẩn tương phản WCAG cho cả chế độ Tối và Sáng Bách Khoa, hỗ trợ cảm ứng, xuất PDF học thuật và đóng gói sẵn tệp đơn <code>LTI_Pole_Zero_SingleFile.html</code> hoạt động độc lập hoàn toàn không cần internet.</li>
+      </ol>
+
+      <h2>6.2. Hạn chế và hướng phát triển mở rộng</h2>
+      <p>
+        Bên cạnh các kết quả đạt được, sản phẩm vẫn còn một số hướng mở rộng giá trị có thể phát triển trong các phiên bản tiếp theo:
+      </p>
+      <ul>
+        <li><strong>Tích hợp bộ tổng hợp bộ lọc chuẩn tự động:</strong> Cho phép nhập trực tiếp thông số thiết kế ($f_p, f_s, A_p, A_s$) để tự động tính vị trí Cực/Zero theo các họ bộ lọc kinh điển Butterworth, Chebyshev loại I/II và Elliptic (Cauer) rồi chuyển sang miền $z$ bằng Bilinear Transform.</li>
+        <li><strong>Tích hợp Web Audio API nghe thử trực tiếp:</strong> Cho phép tải tệp âm thanh <code>.wav/.mp3</code> hoặc tạo nguồn nhiễu thời gian thực đi qua bộ lọc LTI đang thiết kế để sinh viên nghe trực tiếp hiệu quả lọc trên loa.</li>
+        <li><strong>Xuất mã nhúng thực thi phần cứng:</strong> Tự động sinh mã nguồn C (cho vi điều khiển STM32 / ESP32 / ARM CMSIS-DSP) hoặc mã MATLAB/Python SciPy từ hệ số $\{b_m\}, \{a_k\}$ đang mô phỏng.</li>
+      </ul>
+
+      <h1 class="chapter-title" style="margin-top: 28px;">TÀI LIỆU THAM KHẢO</h1>
+      <ol style="font-size: 12pt; line-height: 1.65;">
+        <li>A. V. Oppenheim and R. W. Schafer, <em>Discrete-Time Signal Processing</em>, 3rd ed., Upper Saddle River, NJ: Prentice Hall, 2009.</li>
+        <li>J. G. Proakis and D. G. Manolakis, <em>Digital Signal Processing: Principles, Algorithms, and Applications</em>, 4th ed., Pearson Prentice Hall, 2007.</li>
+        <li>S. K. Mitra, <em>Digital Signal Processing: A Computer-Based Approach</em>, 4th ed., McGraw-Hill, 2011.</li>
+        <li>Bộ môn Xử lý Tín hiệu – Khoa Điện – Điện tử, Trường Đại học Bách Khoa – ĐHQG TP.HCM, <em>Giáo trình và Bài giảng Xử lý Số Tín hiệu (Digital Signal Processing)</em>.</li>
+        <li>O. Aberth, "Iteration methods for finding all zeros of a polynomial simultaneously," <em>Mathematics of Computation</em>, vol. 27, no. 122, pp. 339–344, 1973.</li>
+        <li>KaTeX Documentation (<code>https://katex.org/</code>) và HTML5 Canvas 2D API Specification (MDN Web Docs).</li>
+      </ol>
+    </section>
+
+  </div>
+
+  <script>
+    window.addEventListener('DOMContentLoaded', () => {
+      if (window.renderMathInElement) {
+        window.renderMathInElement(document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false },
+            { left: '\\(', right: '\\)', display: false },
+            { left: '\\[', right: '\\]', display: true }
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
+</body>
+</html>
